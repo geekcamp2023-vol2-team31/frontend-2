@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useRef } from "react";
+import styles from "./InterelementLink.module.css";
 
 interface IInterelementLink {
-  leftItemId: string;
-  rightItemId: string;
+  // leftItemId: string;
+  // rightItemId: string;
   x0: number;
   y0: number;
   x1: number;
@@ -40,7 +41,7 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
         ref={canvasRef}
         width={10000}
         height={10000}
-        style={{ position: "absolute", pointerEvents: "none" }}
+        className={styles.link}
       />
     </div>
   );
