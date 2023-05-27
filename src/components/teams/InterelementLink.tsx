@@ -8,12 +8,11 @@ interface IInterelementLink {
   y0: number;
   x1: number;
   y1: number;
-  emphasized?: true;
+  emphasized: boolean;
 }
 
 const InterelementLink: FC<IInterelementLink> = (props) => {
-  const { /*leftItemId, rightItemId,*/ x0, y0, x1, y1 /*, emphasized*/ } =
-    props;
+  const { /*leftItemId, rightItemId,*/ x0, y0, x1, y1, emphasized } = props;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -27,11 +26,12 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
     }
 
     ctx.strokeStyle = "#black";
+    emphasized ? (ctx.lineWidth = 10) : (ctx.lineWidth = 1);
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.stroke();
-  }, []);
+  }, [emphasized]);
 
   return (
     <div>
@@ -39,7 +39,7 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
         ref={canvasRef}
         width={10000}
         height={10000}
-        style={{ position: "absolute" }}
+        style={{ position: "absolute", pointerEvents: "none" }}
       />
     </div>
   );
