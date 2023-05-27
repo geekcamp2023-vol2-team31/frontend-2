@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useRef } from "react";
-// const width= 100000
-// const height = 100000
+
 interface IInterelementLink {
   leftItemId: string;
   rightItemId: string;
@@ -24,14 +23,16 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
     if (!ctx) {
       throw new Error("context取得失敗");
     }
-
-    ctx.strokeStyle = "#black";
-    emphasized ? (ctx.lineWidth = 10) : (ctx.lineWidth = 1);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    emphasized
+      ? (ctx.strokeStyle = "rgba(255,0,0,1)")
+      : (ctx.strokeStyle = "rgba(255,0,0,0.3)");
+    emphasized ? (ctx.lineWidth = 7) : (ctx.lineWidth = 5);
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.stroke();
-  }, [emphasized]);
+  }, [x0, y0, x1, y1, emphasized]);
 
   return (
     <div>
