@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { LoginButton } from "./LoginButton";
-import exp from "constants";
 
 const meta: Meta<typeof LoginButton> = {
   title: "LoginButton",
