@@ -6,9 +6,9 @@ export const LoginButton = () => {
         src="/assets/github-icon.svg"
         width={25}
         height={25}
-        alt="githubのアイコン"
+        alt="GitHubのアイコン"
       />
-      Githubでログインする
+      GitHubでログインする
     </button>
   );
 };
