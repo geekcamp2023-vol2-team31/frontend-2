@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const restricted = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
   if (session) {
     res.send({
@@ -15,3 +15,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 };
+export default restricted;
