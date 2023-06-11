@@ -1,14 +1,14 @@
 .card {
   position: relative;
   display: flex;
-  height: 28px;
+  /* height: 28px; */
   border-radius: 8px;
-  margin-bottom: 4px;
   background: #fff;
 }
 
 .checkbox {
-  margin-left: 14px;
+  margin-left: 12px;
+  margin-right: 0;
 }
 
 .input {
@@ -17,21 +17,38 @@
   width: 100%;
   background: none;
   color: black;
-  padding: 5px 8px;
+  padding: 8px 8px;
 }
 
 .input:focus {
   outline: none;
 }
 
-.connector-left {
+.connector {
   position: absolute;
-  top: 3px;
+  cursor: pointer;
+  display: flex;
+  background: none;
+  border: none;
+  padding: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+}
+
+.connector > svg {
+  fill: #7f7e7d;
+}
+
+.connector > svg:hover {
+  fill: #9f9e9d;
+}
+
+.connector-left {
   left: -15px;
 }
 
 .connector-right {
-  position: absolute;
-  top: 3px;
   right: -15px;
 }
