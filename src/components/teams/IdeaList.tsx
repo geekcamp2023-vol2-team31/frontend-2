@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import IdeaListItem from './IdeaListItem';
 import classes from './IdeaList.module.css';
+import { ReactSortable } from 'react-sortablejs';
 
 interface IIdeaListProps {
   id: string;
@@ -12,6 +13,7 @@ interface IIdeaListProps {
     value: string;
   }[];
   onChangeItemsHeight?: (event: IIdeaListChangeItemsHeightEvent) => void;
+  onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
 }
 
 interface IIdeaListChangeItemsHeightEvent {
@@ -20,6 +22,14 @@ interface IIdeaListChangeItemsHeightEvent {
     id: string;
     height: number;
     offsetY: number;
+  }[];
+}
+
+interface IIdeaListChangeItemsEvent {
+  id: string;
+  items: {
+    id: string;
+    value: string;
   }[];
 }
 
@@ -37,7 +47,7 @@ const offsetYOfFirstItem = 14 + 24 + 12;
 // IdeaListItem間のマージン 単位: px
 const itemMargin = 8; 
 
-const IdeaList: FC<IIdeaListProps> = ({ id, label, leftStyle, rightStyle, items, onChangeItemsHeight }) => {
+const IdeaList: FC<IIdeaListProps> = ({ id, label, leftStyle, rightStyle, items, onChangeItemsHeight, onChangeItems }) => {
   const [itemHeights, setItemHeights] = useState<IItemHeight[]>(
     // 初期値は全idにheight: 0を割り当てる。
     items.map(item => ({ id: item.id, height: 0 }))
@@ -74,10 +84,20 @@ const IdeaList: FC<IIdeaListProps> = ({ id, label, leftStyle, rightStyle, items,
     });
   }
 
+  const handleSetItems = (items: { id: string, value: string }[]) => {
+    if (onChangeItems) {
+      onChangeItems({ id, items });
+    }
+  }
+
   return (
     <section className={classes.card}>
       <h2 className={classes.heading}>{label}</h2>
-      <div className={classes['children-container']}>
+      <ReactSortable
+        className={classes['children-container']}
+        list={items}
+        setList={handleSetItems}
+      >
         {
           items.map(item => (
             <IdeaListItem
@@ -89,7 +109,7 @@ const IdeaList: FC<IIdeaListProps> = ({ id, label, leftStyle, rightStyle, items,
             />
           ))
         }
-      </div>
+      </ReactSortable>
     </section>
   );
 };
