@@ -17,10 +17,12 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.28.11",
+    "@tanstack/react-query": "^4.29.12",
     "@types/node": "^20.2.0",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "eslint-config-next": "^13.4.2",
+    "material-icons": "^1.13.8",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
     "react": "^18.2.0",
