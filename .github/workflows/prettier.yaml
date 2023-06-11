@@ -1,4 +1,4 @@
-name: Build Test
+name: prettier Test
 on:
   push:
     branches-ignore:
@@ -31,5 +31,5 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
 
-      - name: app-build
-        run: pnpm run build
+      - name: format-check
+        run: pnpm run check

@@ -4,8 +4,8 @@ import classes from "./IdeaListItem.module.css";
 interface IIdeaListItemProps {
   id: string;
   value: string;
-  leftStyle: 'circle' | 'triangle';
-  rightStyle: 'circle' | 'triangle';
+  leftStyle: "circle" | "triangle";
+  rightStyle: "circle" | "triangle";
   checkboxValue?: boolean;
   emphasized?: boolean;
   onEnter?: (event: IIdeaListItemEnterEvent) => void;
@@ -21,7 +21,7 @@ interface IIdeaListItemEnterEvent {
 
 interface IIdeaListItemClickConnectorEvent {
   id: string;
-  target: 'left' | 'right';
+  target: "left" | "right";
 }
 
 interface IIdeaListItemChangeCheckboxEvent {
@@ -35,7 +35,16 @@ interface IIdeaListItemChangeHeightEvent {
 }
 
 const IdeaListItem: FC<IIdeaListItemProps> = ({
-  id, value, checkboxValue, leftStyle, rightStyle, emphasized, onEnter, onClickConnector, onChangeCheckbox, onChangeHeight
+  id,
+  value,
+  checkboxValue,
+  leftStyle,
+  rightStyle,
+  emphasized,
+  onEnter,
+  onClickConnector,
+  onChangeCheckbox,
+  onChangeHeight,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   // 入力中の値 エンターキーを押した際にonEnterに渡される
@@ -46,15 +55,19 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
     if (ref.current && onChangeHeight) {
       onChangeHeight({ id, height: ref.current.clientHeight });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // prop.value の値が変わったときに、入力フォームの値をvalueに合わせる
-  useEffect(() => { setInputValue(value); }, [value]);
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const handleChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!onChangeCheckbox) {
-      throw Error('onChangeCheckbox is undefined, though checkboxValue is not undefined'); 
+      throw Error(
+        "onChangeCheckbox is undefined, though checkboxValue is not undefined"
+      );
     }
     onChangeCheckbox({ id, value: e.target.checked });
   };
@@ -67,7 +80,7 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
 
   return (
     <div className={classes.card} ref={ref}>
-      {(checkboxValue != null) && (
+      {checkboxValue != null && (
         <input
           type="checkbox"
           className={classes.checkbox}
@@ -84,34 +97,40 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
         onKeyDown={handleKeyDown}
       />
       <button
-        onClick={() => onClickConnector && onClickConnector({ id, target: 'left' })}
-        className={`${classes.connector} ${classes['connector-left']}`}
-      >
-        {leftStyle === 'circle'
-        // circle
-        ? (<svg viewBox="0 0 70 100" height="20" width="20">
-             <path d="M 70 0 A 50 50 -90 1 0 70 100 Z"/>
-           </svg>)
-        // triangle
-        : (<svg viewBox="0 0 70 100" height="20" width="20">
-             <path d="M 0 50 L 70 0 L 70 100 Z"/>
-           </svg>)
+        onClick={() =>
+          onClickConnector && onClickConnector({ id, target: "left" })
         }
+        className={`${classes.connector} ${classes["connector-left"]}`}
+      >
+        {leftStyle === "circle" ? (
+          // circle
+          <svg viewBox="0 0 70 100" height="20" width="20">
+            <path d="M 70 0 A 50 50 -90 1 0 70 100 Z" />
+          </svg>
+        ) : (
+          // triangle
+          <svg viewBox="0 0 70 100" height="20" width="20">
+            <path d="M 0 50 L 70 0 L 70 100 Z" />
+          </svg>
+        )}
       </button>
       <button
-        onClick={() => onClickConnector && onClickConnector({ id, target: 'right' })}
-        className={`${classes.connector} ${classes['connector-right']}`}
-      >
-        {rightStyle === 'circle'
-        // circle
-        ? (<svg viewBox="0 0 70 100" height="20" width="20">
-             <path d="M 0 0 A 50 50 -90 1 1 0 100 Z"/>
-           </svg>)
-        // triangle
-        : (<svg viewBox="0 0 70 100" height="20" width="20">
-             <path d="M 0 0 L 70 50 L 0 100 Z"/>
-           </svg>)
+        onClick={() =>
+          onClickConnector && onClickConnector({ id, target: "right" })
         }
+        className={`${classes.connector} ${classes["connector-right"]}`}
+      >
+        {rightStyle === "circle" ? (
+          // circle
+          <svg viewBox="0 0 70 100" height="20" width="20">
+            <path d="M 0 0 A 50 50 -90 1 1 0 100 Z" />
+          </svg>
+        ) : (
+          // triangle
+          <svg viewBox="0 0 70 100" height="20" width="20">
+            <path d="M 0 0 L 70 50 L 0 100 Z" />
+          </svg>
+        )}
       </button>
     </div>
   );
