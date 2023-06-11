@@ -28,7 +28,8 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
     emphasized
       ? (ctx.strokeStyle = "rgba(255,0,0,1)")
       : (ctx.strokeStyle = "rgba(255,0,0,0.3)");
-    emphasized ? (ctx.lineWidth = 7) : (ctx.lineWidth = 5);
+    emphasized ? (ctx.lineWidth = 5) : (ctx.lineWidth = 4);
+    ctx.lineCap = "round";
     ctx.beginPath();
     ctx.moveTo(margin, Math.max(y0 - y1 + margin, margin));
     ctx.lineTo(x1 - x0 + margin, Math.max(y1 - y0 + margin, margin));
@@ -40,9 +41,12 @@ const InterelementLink: FC<IInterelementLink> = (props) => {
       <canvas
         ref={canvasRef}
         width={x1 - x0 + 2 * margin}
-        height={y1 - y0 + 2 * margin}
+        height={Math.abs(y1 - y0) + 2 * margin}
         className={styles.link}
-        style={{ left: `${x0}px`, top: `${Math.min(y1, y0)}px` }}
+        style={{
+          left: `${x0 - margin}px`,
+          top: `${Math.min(y1, y0) - margin}px`,
+        }}
       />
     </div>
   );
