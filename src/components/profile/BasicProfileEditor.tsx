@@ -1,16 +1,45 @@
+import { requests } from "../../utils/requests";
 import style from "./BasicProfileEditor.module.css";
-import { FC, useRef } from "react";
-// import { useMutation } from "@tanstack/react-query";
+import { FC, useEffect, useRef } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { IPutUsersMeBody } from "../../../@types/user/IPutUsersMeBody";
 
 export const BasicProfileEditor: FC = () => {
   const displayName = useRef<HTMLInputElement>(null);
   const selfIntroduction = useRef<HTMLTextAreaElement>(null);
-  // const mutation = useMutation({
-  //   mutationFn: (newInput) => {
-  //     return fetch("/users/me",  ).catch(err=>console.error(err));
-  //   },
-  // });
-  // const onSubmit = () => { };
+
+  const getUsersMe = () => {
+    return requests("/users/me") as unknown as IPutUsersMeBody;
+  };
+  const query = useQuery({
+    queryKey: ["users", "me"],
+    queryFn: getUsersMe,
+  });
+
+  const postUsersMe = (body: IPutUsersMeBody) => {
+    return requests(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  };
+  const mutation = useMutation({ mutationFn: postUsersMe });
+  const onSubmit = () => {
+    mutation.mutate({
+      user: {
+        name: displayName.current?.value ?? "",
+        bio: selfIntroduction.current?.value ?? "",
+        icon: "",
+        techs: [],
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (displayName.current)
+      displayName.current.value = query.data?.user.name ?? "";
+    if (selfIntroduction.current)
+      selfIntroduction.current.value = query.data?.user.bio ?? "";
+  }, [query.data?.user.bio, query.data?.user.name]);
 
   return (
     <div className={style.container}>
@@ -34,10 +63,12 @@ export const BasicProfileEditor: FC = () => {
         </label>
       </div>
       <div>
-      <div className={style.buttonContainer}>
-        <button className={style.undo}>変更を戻す</button>
-        <button className={style.save}>変更を保存</button>
-      </div>
+        <div className={style.buttonContainer}>
+          <button className={style.undo}>変更を戻す</button>
+          <button onClick={onSubmit} className={style.save}>
+            変更を保存
+          </button>
+        </div>
       </div>
     </div>
   );
