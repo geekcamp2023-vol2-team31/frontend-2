@@ -17,12 +17,12 @@ export const Header: FC<HeaderProps> = ({ title, invidationCode }) => {
         <p className={style.title}>{title}</p>
       )}
       {invidationCode && (
-        <div className={style.buttonContainer}>
+        <div className={style.flex}>
           <button className={style.buttonContainer}>
             <img src="assets/join-team.svg" alt="チームに参加" />
             <strong>コード{invidationCode}</strong>
           </button>
-          <button>
+          <button className={style.buttonContainer}>
             <img src="assets/group.svg" alt="グループ" />
           </button>
         </div>

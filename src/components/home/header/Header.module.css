@@ -33,6 +33,10 @@ input {
   display: flex;
   align-items: center;
   gap: 4px;
+  background-color: #fcfaf8;
+  color: #676461;
+  border: 1px solid #ece8e3;
+  border-radius: 4px;
 }
 .input {
   width: 100%;
@@ -42,4 +46,8 @@ input {
 .title {
   color: #676461;
   font-weight: bold;
+}
+.flex {
+  display: flex;
+  gap: 4px;
 }
