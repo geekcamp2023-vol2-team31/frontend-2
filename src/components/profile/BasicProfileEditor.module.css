@@ -11,38 +11,40 @@ textarea {
   outline: none;
 }
 
-label,input,textarea{
+label,
+input,
+textarea {
   display: block;
   min-width: 100%;
 }
 
-button{
+button {
   border-radius: 4px;
   padding: 4px 8px;
   margin-top: 8px;
   font-weight: 400;
 }
 
-.container{
-  background-color: #F8F6F2;
+.container {
+  background-color: #f8f6f2;
   border-radius: 16px;
   padding: 16px;
 }
 
-.title{
+.title {
   font-size: 18px;
   font-weight: bold;
 }
 
-.description{
+.description {
   color: #676461;
   margin-bottom: 16px;
 }
 
-.input{
-  background-color: #FFF;
+.input {
+  background-color: #fff;
   padding: 4px 8px;
-  margin-bottom: 8px;  
+  margin-bottom: 8px;
 }
 
 .label {
@@ -50,20 +52,20 @@ button{
   font-weight: lighter;
 }
 
-.buttonContainer{
+.buttonContainer {
   display: flex;
   gap: 8px;
   justify-content: end;
 }
 
-.undo{
-  background-color: #FCFAF8;
-  color:#676461;
-  border:1px solid #ECE8E3;
+.undo {
+  background-color: #fcfaf8;
+  color: #676461;
+  border: 1px solid #ece8e3;
 }
 
-.save{
-  background-color: #C7460C;
-  color: #FFF;
-  border: 1px solid #7B2A03
+.save {
+  background-color: #c7460c;
+  color: #fff;
+  border: 1px solid #7b2a03;
 }
