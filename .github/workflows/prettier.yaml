@@ -1,4 +1,4 @@
-name: Build Test
+name: prettier Test
 on:
   push:
     branches-ignore:
@@ -10,10 +10,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.SUB_MODULE_TOKEN }}
-          submodules: true
 
       - uses: pnpm/action-setup@v2
         with:
@@ -35,6 +31,5 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
 
-
-      - name: app-build
-        run: pnpm run build
+      - name: format-check
+        run: pnpm run check

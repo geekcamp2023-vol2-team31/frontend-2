@@ -1,0 +1,53 @@
+button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+
+  border-radius: 4px;
+  padding: 4px 8px;
+  background-color: #fcfaf8;
+  border: 1px solid #ece8e3;
+  color: #676461;
+  white-space: nowrap;
+}
+input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+}
+
+.header {
+  padding: 8px 0px;
+  border-bottom: 2px solid #ece8e3;
+  display: flex;
+  gap: 8px;
+}
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #fcfaf8;
+  color: #676461;
+  border: 1px solid #ece8e3;
+  border-radius: 4px;
+}
+.input {
+  width: 100%;
+  border: 1px solid #ece8e3;
+  color: #676461;
+}
+.title {
+  color: #676461;
+  font-weight: bold;
+}
+.flex {
+  display: flex;
+  gap: 4px;
+}
