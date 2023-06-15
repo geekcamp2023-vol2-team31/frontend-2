@@ -18,21 +18,14 @@ const InterelementLink: FC<IInterelementLink> = ({
 }) => {
   const margin = 10;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
-    setCanvas(canvasRef.current);
-    if (!canvas) {
-      return;
-    }
-    setCtx(canvas.getContext("2d"));
-    if (!ctx) {
-      return;
-    }
-    redraw();
+    const context = canvasRef.current.getContext("2d");
+    if (!context) return;
+    setCtx(context);
   }, [canvasRef]);
 
   const redraw = () => {
@@ -54,7 +47,7 @@ const InterelementLink: FC<IInterelementLink> = ({
     ctx.stroke();
   };
 
-  useEffect(redraw, [x0, y0, x1, y1, emphasized]);
+  useEffect(redraw, [x0, y0, x1, y1, emphasized, ctx]);
 
   return (
     <div>
