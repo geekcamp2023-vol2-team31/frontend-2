@@ -9,7 +9,7 @@ export const BasicProfileEditor: FC = () => {
   const selfIntroduction = useRef<HTMLTextAreaElement>(null);
 
   const getUsersMe = () => {
-    return requests("/users/me") as unknown as IPutUsersMeBody;
+    return requests<IPutUsersMeBody>("/users/me");
   };
   const query = useQuery({
     queryKey: ["users", "me"],
