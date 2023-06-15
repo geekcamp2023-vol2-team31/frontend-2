@@ -19,9 +19,7 @@ const InterelementFrame: FC<IInterelementFrame> = ({ x, y, width, height }) => {
         top: `${y}px`,
       }}
       className={styles.frame}
-    >
-      agergwgrw
-    </div>
+    ></div>
   );
 };
 
