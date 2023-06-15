@@ -1,9 +1,7 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import styles from "./InterelementLink.module.css";
 
 interface IInterelementLink {
-  // leftItemId: string;
-  // rightItemId: string;
   x0: number;
   y0: number;
   x1: number;
@@ -11,30 +9,52 @@ interface IInterelementLink {
   emphasized: boolean;
 }
 
-const InterelementLink: FC<IInterelementLink> = (props) => {
-  const { /*leftItemId, rightItemId,*/ x0, y0, x1, y1, emphasized } = props;
+const InterelementLink: FC<IInterelementLink> = ({
+  x0,
+  y0,
+  x1,
+  y1,
+  emphasized,
+}) => {
   const margin = 10;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (!canvasRef.current) {
-      throw new Error("objectがnull");
+      return;
     }
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    setCanvas(canvasRef.current);
+    if (!canvas) {
+      return;
+    }
+    setCtx(canvas.getContext("2d"));
     if (!ctx) {
-      throw new Error("context取得失敗");
+      return;
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    emphasized
-      ? (ctx.strokeStyle = "rgba(255,0,0,1)")
-      : (ctx.strokeStyle = "rgba(255,0,0,0.3)");
-    emphasized ? (ctx.lineWidth = 5) : (ctx.lineWidth = 4);
+    redraw();
+  }, [canvasRef]);
+
+  const redraw = () => {
+    if (!canvasRef.current || !ctx) {
+      return;
+    }
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    if (emphasized) {
+      ctx.strokeStyle = "rgba(255,0,0,1)";
+      ctx.lineWidth = 5;
+    } else {
+      ctx.strokeStyle = "rgba(255,0,0,0.3)";
+      ctx.lineWidth = 4;
+    }
     ctx.lineCap = "round";
     ctx.beginPath();
     ctx.moveTo(margin, Math.max(y0 - y1 + margin, margin));
     ctx.lineTo(x1 - x0 + margin, Math.max(y1 - y0 + margin, margin));
     ctx.stroke();
-  }, [x0, y0, x1, y1, emphasized]);
+  };
+
+  useEffect(redraw, [x0, y0, x1, y1, emphasized]);
 
   return (
     <div>
