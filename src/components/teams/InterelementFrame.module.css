@@ -1,4 +1,7 @@
 .frame {
   position: absolute;
   pointer-events: none;
+  border: 4px solid #cb6a45;
+  border-radius: 10px;
+  padding: 10px;
 }
