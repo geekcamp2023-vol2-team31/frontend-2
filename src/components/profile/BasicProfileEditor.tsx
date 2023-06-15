@@ -2,7 +2,7 @@ import { requests } from "../../utils/requests";
 import style from "./BasicProfileEditor.module.css";
 import { FC, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { IPutUsersMeBody } from "../../../@types/user/IPutUsersMeBody";
+import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 
 export const BasicProfileEditor: FC = () => {
   const displayName = useRef<HTMLInputElement>(null);
