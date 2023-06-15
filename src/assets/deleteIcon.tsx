@@ -4,7 +4,7 @@ const DeleteIcon = ({ className }: { className?: string }) => {
       width="12"
       height="14"
       viewBox="0 0 12 14"
-      fill="none"
+      fill="fill"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >

@@ -1,0 +1,17 @@
+.buttonReset {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+}
+
+.button {
+  color: #979490;
+  & .active {
+    color: #32312f;
+  }
+}
