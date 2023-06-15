@@ -1,5 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
-import IdeaListItem from "./IdeaListItem";
+import IdeaListItem, {
+  IIdeaListItemChangeCheckboxEvent,
+  IIdeaListItemClickConnectorEvent,
+  IIdeaListItemEnterEvent,
+} from "./IdeaListItem";
 import classes from "./IdeaList.module.css";
 import { ReactSortable } from "react-sortablejs";
 
@@ -11,6 +15,11 @@ interface IIdeaListProps {
   items: {
     id: string;
     value: string;
+    checkboxValue?: boolean;
+    emphasized?: boolean;
+    onEnter?: (event: IIdeaListItemEnterEvent) => void;
+    onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
+    onChangeCheckbox?: (event: IIdeaListItemChangeCheckboxEvent) => void;
   }[];
   onChangeItemsHeight?: (event: IIdeaListChangeItemsHeightEvent) => void;
   onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
