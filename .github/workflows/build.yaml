@@ -29,6 +29,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          fetch-depth: 0
+          token: ${{ secrets.SUB_MODULE_TOKEN }}
+          submodules: true
 
 
       - name: app-build

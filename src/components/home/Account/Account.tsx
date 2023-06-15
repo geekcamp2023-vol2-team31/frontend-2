@@ -1,7 +1,7 @@
+import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 import { requests } from "../../../utils/requests";
 import style from "./Account.module.css";
 import { useQuery } from "@tanstack/react-query";
-import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 
 export const Account = () => {
   const getUsersMe = () => {
