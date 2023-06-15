@@ -1,0 +1,18 @@
+.card {
+  border-radius: 8px;
+  background: #ece8e3;
+  padding: 14px;
+}
+
+.heading {
+  font-size: 16px;
+  color: #32312f;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.children-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px 0; /* NOTE: 第１要素はIdeaList.tsxのitemMarginと同じにする必要がある */
+}
