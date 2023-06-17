@@ -11,7 +11,10 @@
 
 .button {
   color: #979490;
-  & .active {
+  :hover {
+    color: #32312f;
+  }
+  :active {
     color: #32312f;
   }
 }
