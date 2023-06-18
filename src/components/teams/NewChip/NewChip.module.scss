@@ -21,18 +21,21 @@ button {
 }
 
 .container {
-  padding: 4px;
-  display: inline-block;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background-color: #fcfaf8;
   color: #676461;
   border: 1px solid #ece8e3;
   border-radius: 4px;
+  width: fit-content;
+  height: 32px;
 }
 
 .inputContainer {
   position: relative;
 }
-
 .inputContainer::before {
   content: "";
   display: inline-block;
@@ -50,8 +53,4 @@ button {
 .input {
   margin-left: 28px;
   width: 60px;
-}
-
-.button {
-  color: #979490;
 }

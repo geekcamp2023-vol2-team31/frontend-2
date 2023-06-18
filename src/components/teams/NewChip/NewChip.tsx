@@ -32,10 +32,10 @@ export const NewChip: FC<INewChip> = ({ id, onEnter, children }) => {
           onKeyDown={handleEnter}
           className={style.input}
         />
-        <button onClick={handleClick} className={style.buttonContainer}>
-          {children}
-        </button>
       </div>
+      <button onClick={handleClick} className={style.buttonContainer}>
+        {children}
+      </button>
     </div>
   );
 };
