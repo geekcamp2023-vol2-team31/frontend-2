@@ -1,15 +1,14 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { EditTeamSideBar } from "./EditTeamSideBar";
+import { EditIdeaSideBar } from "./EditIdeaSideBar";
 
-const meta: Meta<typeof EditTeamSideBar> = {
-  component: EditTeamSideBar,
+const meta: Meta<typeof EditIdeaSideBar> = {
+  component: EditIdeaSideBar,
 };
 export default meta;
 
-export const Default: StoryObj<typeof EditTeamSideBar> = {};
+export const Default: StoryObj<typeof EditIdeaSideBar> = {};
 Default.args = {
-  teamName: "技育CAMPのアイデア出しをサポーターズ",
-  invitationCode: "#0OilIL",
+  ideaName: "技術COMP",
   estimatedTechList: [
     {
       id: "1",
