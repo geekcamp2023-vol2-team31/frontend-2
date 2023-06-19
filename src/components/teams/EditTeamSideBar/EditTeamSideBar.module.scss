@@ -11,7 +11,7 @@ input {
 
 .container {
   border-radius: 16px;
-  background-color: #ece8e3;
+  background-color: #f8f6f2;
   padding: 16px;
 }
 
@@ -25,6 +25,11 @@ input {
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
+}
+
+.techWrapper {
+  border: 1px solid #ece8e3;
+  border-radius: 6px;
 }
 
 .input {
@@ -53,6 +58,7 @@ input {
 .deleteButton {
   padding: 4px 8px;
   font-size: 16px;
+  font-weight: 300;
   border-radius: 4px;
   color: #676461;
   background-color: #fcfaf8;

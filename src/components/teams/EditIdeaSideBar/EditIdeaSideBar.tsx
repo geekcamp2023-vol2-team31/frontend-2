@@ -27,35 +27,39 @@ export const EditIdeaSideBar: FC<Props> = ({
       </div>
       <div className={style.techContainer}>
         <p className={style.title}>使用予定の技術</p>
-        {estimatedTechList.map((iTech) => {
-          return (
-            <TechListItem
-              key={iTech.id}
-              id={iTech.id}
-              label={iTech.label}
-              leftSlot={iTech.leftSlot}
-              users={iTech.users}
-              actionType={iTech.actionType}
-              onActionClick={iTech.onActionClick}
-            />
-          );
-        })}
+        <div className={style.techWrapper}>
+          {estimatedTechList.map((iTech) => {
+            return (
+              <TechListItem
+                key={iTech.id}
+                id={iTech.id}
+                label={iTech.label}
+                leftSlot={iTech.leftSlot}
+                users={iTech.users}
+                actionType={iTech.actionType}
+                onActionClick={iTech.onActionClick}
+              />
+            );
+          })}
+        </div>
       </div>
       <div className={style.techContainer}>
         <p className={style.title}>メンバーが持っている技術</p>
-        {memberHasTechList.map((iTech) => {
-          return (
-            <TechListItem
-              key={iTech.id}
-              id={iTech.id}
-              label={iTech.label}
-              leftSlot={iTech.leftSlot}
-              users={iTech.users}
-              actionType={iTech.actionType}
-              onActionClick={iTech.onActionClick}
-            />
-          );
-        })}
+        <div className={style.techWrapper}>
+          {memberHasTechList.map((iTech) => {
+            return (
+              <TechListItem
+                key={iTech.id}
+                id={iTech.id}
+                label={iTech.label}
+                leftSlot={iTech.leftSlot}
+                users={iTech.users}
+                actionType={iTech.actionType}
+                onActionClick={iTech.onActionClick}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <button className={style.deleteButton}>技術COMPを削除</button>
