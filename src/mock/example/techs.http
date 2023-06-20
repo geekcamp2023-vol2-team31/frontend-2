@@ -1,0 +1,12 @@
+### GET /techs
+GET http://localhost:3000/techs
+
+### PUT /techs
+PUT http://localhost:3000/techs/Java
+Content-Type: application/json
+
+{
+  "tech": {
+    "icon": "<JAVA_ICON_URL>"
+  }
+}

@@ -1,0 +1,29 @@
+### GET /users/me
+GET http://localhost:3000/users/me
+
+### PUT /users/me
+PUT http://localhost:3000/users/me
+Content-Type: application/json
+
+{
+    "user": {
+        "id": "1",
+        "name": "Yamada 1Taro",
+        "bio": "Yamadaです。お願いします",
+        "techs": [
+            {
+                "id": "1",
+                "name": "TypeScript",
+                "level": "beginner"
+            },
+            {
+                "id": "2",
+                "name": "JavaScript",
+                "level": "expert"
+            }
+        ]
+    }
+}
+
+### PUT /users/me/teams/:invitationCode
+PUT http://localhost:3000/users/me/teams/dummy_code
