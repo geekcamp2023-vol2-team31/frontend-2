@@ -14,7 +14,8 @@
     "check": "prettier -c \"src/**/*.{tsx,ts,js,json,css,scss}\"",
     "lint:fix": "npm run format&&npm run eslint:fix&&npm run check-types",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "mock-server": "node src/mock/server.js"
   },
   "dependencies": {
     "@sinclair/typebox": "^0.28.11",
