@@ -1,0 +1,10 @@
+### POST /auth
+POST http://localhost:4000/auth
+Content-Type: application/json
+
+{
+  "token": "DUMMY_TOKEN"
+}
+
+### DELETE /auth
+DELETE http://localhost:4000/auth
