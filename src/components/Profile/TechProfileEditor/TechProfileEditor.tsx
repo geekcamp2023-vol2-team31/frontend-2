@@ -7,6 +7,7 @@ import { DrawIcon } from "@/assets/drawIcon";
 import { SchoolIcon } from "@/assets/schoolIcon";
 import { DeleteIcon } from "@/assets/deleteIcon";
 import { NewChip } from "@/components/teams/NewChip/NewChip";
+import { SuggestIcon } from "@/assets/suggest";
 
 export const TechProfileEditor: FC = () => {
   return (
@@ -17,7 +18,7 @@ export const TechProfileEditor: FC = () => {
       </p>
       <div className={style.techContainer}>
         <div className={style.techTitle}>
-          <FlagIcon />
+          <FlagIcon className={style.icon} />
           <p>完全に理解した</p>
         </div>
         <div className={style.techFlex}>
@@ -32,7 +33,7 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <FlagIcon className={`${style.icon} ${style.button}`} />
+                  <FlagIcon className={`${style.active} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "advanced", level: "advanced" }}
@@ -60,13 +61,13 @@ export const TechProfileEditor: FC = () => {
             background="#3998B6"
           />
           <NewChip id="react">
-            <FlagIcon />
+            <FlagIcon className={style.icon} />
           </NewChip>
         </div>
       </div>
       <div className={style.techContainer}>
         <div className={style.techTitle}>
-          <DrawIcon />
+          <DrawIcon className={style.icon} />
           <p>なんもわからん</p>
         </div>
         <div className={style.techFlex}>
@@ -88,7 +89,7 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DrawIcon className={`${style.icon} ${style.button}`} />
+                  <DrawIcon className={`${style.active} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "expert", level: "expert" }}
@@ -109,13 +110,13 @@ export const TechProfileEditor: FC = () => {
             background="#3998B6"
           />
           <NewChip id="react">
-            <DrawIcon />
+            <DrawIcon className={style.icon} />
           </NewChip>
         </div>
       </div>
       <div className={style.techContainer}>
         <div className={style.techTitle}>
-          <SchoolIcon />
+          <SchoolIcon className={style.icon} />
           <p>ﾁｮｯﾄﾃﾞｷﾙ</p>
         </div>
         <div className={style.techFlex}>
@@ -144,7 +145,7 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <SchoolIcon className={`${style.icon} ${style.button}`} />
+                  <SchoolIcon className={`${style.active} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "delete", level: "delete" }}
@@ -158,13 +159,13 @@ export const TechProfileEditor: FC = () => {
             background="#3998B6"
           />
           <NewChip id="react">
-            <DrawIcon />
+            <SchoolIcon className={style.icon} />
           </NewChip>
         </div>
       </div>
       <div className={style.techContainer}>
         <div className={style.techTitle}>
-          <SchoolIcon />
+          <SuggestIcon className={style.icon} />
           <p>この技術はいかがですか？</p>
         </div>
         <div className={style.techFlex}>
@@ -194,13 +195,6 @@ export const TechProfileEditor: FC = () => {
                   onClick={() => console.log("clicked!")}
                 >
                   <SchoolIcon className={`${style.icon} ${style.button}`} />
-                </ChipButton>
-                <ChipButton
-                  target={{ key: "delete", level: "delete" }}
-                  className={style.buttonReset}
-                  onClick={() => console.log("clicked!")}
-                >
-                  <DeleteIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
               </>
             }
