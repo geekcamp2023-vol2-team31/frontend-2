@@ -1,0 +1,118 @@
+## チーム
+### POST /teams
+POST http://localhost:3000/teams
+Content-Type: application/json
+
+{ "team": { "name": "新しいチーム" } }
+
+### GET /teams/:teamId
+GET http://localhost:3000/teams/1
+
+
+### PUT /teams/:teamId
+PUT http://localhost:3000/teams/1
+Content-Type: application/json
+
+{
+  "team": {
+    "name": "新しいチーム名"
+  }
+}
+
+## コメント
+### DELETE /teams/:teamId
+DELETE http://localhost:3000/teams/1
+
+### GET /teams/:teamId/comments
+GET http://localhost:3000/teams/1/comments
+
+### POST /teams/:teamId/comments
+POST http://localhost:3000/teams/1/comments
+Content-Type: application/json
+
+{
+  "comment": {
+    "content": "アイディア",
+    "columnId": "3"
+  }
+}
+
+### PUT /teams/:teamId/comments/:commentId
+PUT http://localhost:3000/teams/1/comments/1
+Content-Type: application/json
+
+{
+  "comment": {
+    "content": "名前変更後のアイディア"
+  }
+}
+
+
+### DELETE /teams/:teamId/comments/:commentId
+DELETE http://localhost:3000/teams/1/comments/1
+
+## プロダクト
+### GET /teams/:teamId/products
+GET http://localhost:3000/teams/1/products
+
+### POST /teams/:teamId/products
+POST http://localhost:3000/teams/1/products
+Content-Type: application/json
+
+{
+  "product": {
+    "name": "プロダクト1",
+    "comments": [
+      {
+        "id": "4",
+        "value": "コメント4",
+        "type": "solution"
+      },
+      {
+        "id": "5",
+        "value": "コメント5",
+        "type": "solution"
+      }
+    ]
+  }
+}
+
+### PUT /teams/:teamId/products/:productId
+PUT http://localhost:3000/teams/1/products/1
+Content-Type: application/json
+
+{
+  "product": {
+    "name": "プロダクト1",
+    "comments": [
+      {
+        "id": "5",
+        "value": "コメント5",
+        "type": "solution"
+      }
+    ],
+    "techs": [
+      {
+        "name": "JavaScript"
+      }
+    ]
+  }
+}
+
+## リンク（コメント間の直線）
+### GET /teams/:teamId/links/
+GET http://localhost:3000/teams/1/links
+
+### POST /teams/:teamId/links/
+POST http://localhost:3000/teams/1/links
+Content-Type: application/json
+
+{
+  "link": {
+    "left": { "id": "3", "value": "コメント3", "type": "goal" },
+    "right": { "id": "5", "value": "コメント5", "type": "solution" }
+  }
+}
+
+### DELETE /teams/:teamId/links/1
+DELETE http://localhost:3000/teams/1/links/1
