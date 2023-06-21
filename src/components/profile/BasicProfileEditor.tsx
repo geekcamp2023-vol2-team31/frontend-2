@@ -1,12 +1,12 @@
-import { requests } from "../../utils/requests";
+import { requests } from "@/utils/requests";
 import style from "./BasicProfileEditor.module.css";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 
 export const BasicProfileEditor: FC = () => {
-  const displayName = useRef<HTMLInputElement>(null);
-  const selfIntroduction = useRef<HTMLTextAreaElement>(null);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
 
   const getUsersMe = () => {
     return requests<IPutUsersMeBody>("/users/me");
@@ -26,8 +26,8 @@ export const BasicProfileEditor: FC = () => {
   const onSubmit = () => {
     mutation.mutate({
       user: {
-        name: displayName.current?.value ?? "",
-        bio: selfIntroduction.current?.value ?? "",
+        name: name,
+        bio: bio,
         icon: "",
         techs: [],
       },
@@ -35,11 +35,10 @@ export const BasicProfileEditor: FC = () => {
   };
 
   useEffect(() => {
-    if (displayName.current)
-      displayName.current.value = query.data?.user.name ?? "";
-    if (selfIntroduction.current)
-      selfIntroduction.current.value = query.data?.user.bio ?? "";
-  }, [query.data?.user.bio, query.data?.user.name]);
+    if (!query.data) return;
+    setName(query.data.user.name);
+    setBio(query.data.user.bio);
+  }, [query.data]);
 
   return (
     <div className={style.container}>
@@ -53,13 +52,17 @@ export const BasicProfileEditor: FC = () => {
       <div className={style.input}>
         <label htmlFor="" className={style.label}>
           <span>名前</span>
-          <input type="text" ref={displayName} />
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </label>
       </div>
       <div className={style.input}>
         <label htmlFor="" className={style.label}>
           <span>自己紹介</span>
-          <textarea ref={selfIntroduction} />
+          <textarea value={bio} onChange={(e) => setBio(e.target.value)} />
         </label>
       </div>
       <div>
