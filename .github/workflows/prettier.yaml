@@ -1,4 +1,4 @@
-name: prettier Test
+name: prettier/lint Test
 on:
   push:
     branches-ignore:
@@ -32,4 +32,6 @@ jobs:
 
 
       - name: format-check
-        run: pnpm run check
+        run: |
+          pnpm run check
+          pnpm run lint
