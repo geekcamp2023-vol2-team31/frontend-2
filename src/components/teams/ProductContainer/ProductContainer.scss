@@ -1,14 +1,3 @@
-input {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  font: inherit;
-  outline: none;
-}
-
 .container {
   border-radius: 16px;
   background-color: #f8f6f2;
@@ -33,6 +22,15 @@ input {
 }
 
 .input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+
   width: 100%;
   border: 1px solid #ece8e3;
   color: #676461;
