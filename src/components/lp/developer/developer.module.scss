@@ -1,0 +1,17 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 1024px;
+  padding: 20px;
+  gap: 20px;
+  .title {
+    font-size: 20px;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    gap: 32px;
+  }
+}
