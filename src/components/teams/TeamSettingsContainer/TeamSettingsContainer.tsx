@@ -12,7 +12,7 @@ type Props = {
   onClose: () => void;
 };
 
-export const EditTeamSideBar: FC<Props> = ({
+export const TeamSettingsContainer: FC<Props> = ({
   teamName,
   invitationCode,
   estimatedTechList,
@@ -74,8 +74,6 @@ export const EditTeamSideBar: FC<Props> = ({
           })}
         </div>
       </div>
-
-      <button className={style.deleteButton}>技術COMPを削除</button>
     </div>
   );
 };

@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { EditIdeaSideBar } from "./EditIdeaSideBar";
+import { ProductContainer } from "./ProductContainer";
 
-const meta: Meta<typeof EditIdeaSideBar> = {
-  component: EditIdeaSideBar,
+const meta: Meta<typeof ProductContainer> = {
+  component: ProductContainer,
 };
 export default meta;
 
-export const Default: StoryObj<typeof EditIdeaSideBar> = {};
+export const Default: StoryObj<typeof ProductContainer> = {};
 Default.args = {
   ideaName: "技術COMP",
   estimatedTechList: [

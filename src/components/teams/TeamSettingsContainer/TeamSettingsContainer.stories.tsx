@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { EditTeamSideBar } from "./EditTeamSideBar";
+import { TeamSettingsContainer } from "./TeamSettingsContainer";
 
-const meta: Meta<typeof EditTeamSideBar> = {
-  component: EditTeamSideBar,
+const meta: Meta<typeof TeamSettingsContainer> = {
+  component: TeamSettingsContainer,
 };
 export default meta;
 
-export const Default: StoryObj<typeof EditTeamSideBar> = {};
+export const Default: StoryObj<typeof TeamSettingsContainer> = {};
 Default.args = {
   teamName: "技育CAMPのアイデア出しをサポーターズ",
   invitationCode: "#0OilIL",

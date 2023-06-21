@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
 };
 
-export const EditIdeaSideBar: FC<Props> = ({
+export const ProductContainer: FC<Props> = ({
   ideaName,
   estimatedTechList,
   memberHasTechList,
