@@ -10,7 +10,7 @@ const meta: Meta<typeof InterelementLink> = {
 export default meta;
 
 type Story = StoryObj<typeof InterelementLink>;
-export const noEmphasized: Story = {
+export const NoEmphasized: Story = {
   render: () => (
     <InterelementLink x0={100} y0={100} x1={200} y1={200} emphasized={false} />
   ),

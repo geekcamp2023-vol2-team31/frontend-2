@@ -14,22 +14,22 @@ interface IIdeaListItemProps {
   onChangeHeight?: (event: IIdeaListItemChangeHeightEvent) => void;
 }
 
-interface IIdeaListItemEnterEvent {
+export interface IIdeaListItemEnterEvent {
   id: string;
   value: string;
 }
 
-interface IIdeaListItemClickConnectorEvent {
+export interface IIdeaListItemClickConnectorEvent {
   id: string;
   target: "left" | "right";
 }
 
-interface IIdeaListItemChangeCheckboxEvent {
+export interface IIdeaListItemChangeCheckboxEvent {
   id: string;
   value: boolean;
 }
 
-interface IIdeaListItemChangeHeightEvent {
+export interface IIdeaListItemChangeHeightEvent {
   id: string;
   height: number;
 }
