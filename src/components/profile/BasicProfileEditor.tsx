@@ -1,5 +1,5 @@
 import { requests } from "@/utils/requests";
-import style from "./BasicProfileEditor.module.css";
+import style from "./BasicProfileEditor.module.scss";
 import { FC, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";

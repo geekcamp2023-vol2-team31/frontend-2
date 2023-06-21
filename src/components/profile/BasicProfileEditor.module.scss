@@ -1,34 +1,33 @@
-input,
-button,
-textarea {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  font: inherit;
-  outline: none;
-}
-
-label,
-input,
-textarea {
-  display: block;
-  min-width: 100%;
-}
-
-button {
-  border-radius: 4px;
-  padding: 4px 8px;
-  margin-top: 8px;
-  font-weight: 400;
-}
-
 .container {
   background-color: #f8f6f2;
   border-radius: 16px;
   padding: 16px;
+  input,
+  button,
+  textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font: inherit;
+    outline: none;
+  }
+
+  label,
+  input,
+  textarea {
+    display: block;
+    min-width: 100%;
+  }
+
+  button {
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-top: 8px;
+    font-weight: 400;
+  }
 }
 
 .title {

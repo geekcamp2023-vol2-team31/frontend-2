@@ -1,4 +1,4 @@
-import style from "./TimeSelector.module.css";
+import style from "./TeamSelector.module.scss";
 export const TeamSelector = () => {
   return (
     <div className={style.container}>

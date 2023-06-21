@@ -1,6 +1,6 @@
 import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 import { requests } from "../../../utils/requests";
-import style from "./Account.module.css";
+import style from "./Account.module.scss";
 import { useQuery } from "@tanstack/react-query";
 
 export const Account = () => {
