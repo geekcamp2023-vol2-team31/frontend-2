@@ -1,8 +1,8 @@
 ### GET /techs
-GET http://localhost:3000/techs
+GET http://localhost:4000/techs
 
 ### PUT /techs
-PUT http://localhost:3000/techs/Java
+PUT http://localhost:4000/techs/Java
 Content-Type: application/json
 
 {
