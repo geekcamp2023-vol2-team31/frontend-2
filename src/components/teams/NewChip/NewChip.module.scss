@@ -1,14 +1,4 @@
-input {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  outline: none;
-}
-
-button {
+.buttonContainer {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -53,4 +43,12 @@ button {
 .input {
   margin-left: 28px;
   width: 60px;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
 }

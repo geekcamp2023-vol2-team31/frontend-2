@@ -32,28 +32,28 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <FlagIcon className={style.icon} />
+                  <FlagIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "advanced", level: "advanced" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DrawIcon className={style.icon} />
+                  <DrawIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "expert", level: "expert" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <SchoolIcon className={style.icon} />
+                  <SchoolIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "delete", level: "delete" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DeleteIcon className={style.icon} />
+                  <DeleteIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
               </>
             }
@@ -81,28 +81,28 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <FlagIcon className={style.icon} />
+                  <FlagIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "advanced", level: "advanced" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DrawIcon className={style.icon} />
+                  <DrawIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "expert", level: "expert" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <SchoolIcon className={style.icon} />
+                  <SchoolIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "delete", level: "delete" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DeleteIcon className={style.icon} />
+                  <DeleteIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
               </>
             }
@@ -130,28 +130,28 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <FlagIcon className={style.icon} />
+                  <FlagIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "advanced", level: "advanced" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DrawIcon className={style.icon} />
+                  <DrawIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "expert", level: "expert" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <SchoolIcon className={style.icon} />
+                  <SchoolIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "delete", level: "delete" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DeleteIcon className={style.icon} />
+                  <DeleteIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
               </>
             }
@@ -179,28 +179,28 @@ export const TechProfileEditor: FC = () => {
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <FlagIcon className={style.icon} />
+                  <FlagIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "advanced", level: "advanced" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DrawIcon className={style.icon} />
+                  <DrawIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "expert", level: "expert" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <SchoolIcon className={style.icon} />
+                  <SchoolIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
                 <ChipButton
                   target={{ key: "delete", level: "delete" }}
                   className={style.buttonReset}
                   onClick={() => console.log("clicked!")}
                 >
-                  <DeleteIcon className={style.icon} />
+                  <DeleteIcon className={`${style.icon} ${style.button}`} />
                 </ChipButton>
               </>
             }

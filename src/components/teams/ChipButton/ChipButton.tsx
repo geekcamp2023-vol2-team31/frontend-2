@@ -1,4 +1,5 @@
 import { FC, ReactNode } from "react";
+import style from "./ChipButton.module.scss";
 
 interface IChipButtonPrdops {
   target: { key: string; level: "beginner" | "advanced" | "expert" | "delete" };
@@ -21,7 +22,7 @@ export const ChipButton: FC<IChipButtonPrdops> = ({
     onClick({ target });
   };
   return (
-    <button onClick={handleClick} className={className}>
+    <button onClick={handleClick} className={`${className} ${style.button}`}>
       {children}
     </button>
   );
