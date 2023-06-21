@@ -1,13 +1,14 @@
+import { GithubLogo } from "@/assets/lp/github-logo";
 import style from "./LoginButton.module.css";
 export const LoginButton = () => {
   return (
-    <button className={style.button}>
-      <img
-        src="/assets/github-icon.svg"
-        width={25}
-        height={25}
-        alt="GitHubのアイコン"
-      />
+    <button
+      className={style.button}
+      onClick={() => {
+        console.log("あああ");
+      }}
+    >
+      <GithubLogo className={style.github} />
       GitHubでログインする
     </button>
   );
