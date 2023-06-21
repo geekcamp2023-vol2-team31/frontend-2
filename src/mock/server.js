@@ -9,7 +9,7 @@ app.use(
 );
 app.use(bodyParser.json());
 
-const port = 3000;
+const port = 4000;
 
 const log = (msg) => {
   console.log("DEBUG @mock:", msg);
@@ -40,7 +40,7 @@ const user = {
     { ...techs[1], level: "expert" },
   ],
   owns: [teams[0]],
-  belongs: [teams[1]],
+  belongs: [teams[0], teams[1]],
 };
 
 const newTeam = { id: "3", name: "teamAdded", invitationCode: "CODE3" };
