@@ -1,4 +1,4 @@
-name: prettier Test
+name: prettier/lint Test
 on:
   push:
     branches-ignore:
@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SUB_MODULE_TOKEN }}
+          submodules: true
 
       - uses: pnpm/action-setup@v2
         with:
@@ -33,3 +37,5 @@ jobs:
 
       - name: format-check
         run: pnpm run check
+      - name: lint-check
+        run: pnpm run lint
