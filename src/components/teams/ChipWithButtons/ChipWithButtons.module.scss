@@ -8,7 +8,7 @@
   border: solid 1px #ece8e3;
   border-radius: 4px;
   width: fit-content;
-  .icon {
+  .slot {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -19,7 +19,8 @@
   .buttons {
     height: 32px;
     display: flex;
-    gap: 6px;
+    align-items: center;
+    gap: 4px;
   }
 }
 
@@ -34,14 +35,10 @@
   outline: none;
 }
 
-.button {
-  color: #979490;
+.icon {
+  fill: gray;
+}
 
-  &:hover {
-    color: #32312f;
-  }
-
-  &:active {
-    color: #32312f;
-  }
+.active {
+  fill: black;
 }

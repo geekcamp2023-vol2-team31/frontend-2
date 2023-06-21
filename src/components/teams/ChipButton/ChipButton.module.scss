@@ -9,12 +9,10 @@
   outline: none;
 }
 
-.button {
-  color: #979490;
-  :hover {
-    color: #32312f;
-  }
-  :active {
-    color: #32312f;
-  }
+.icon {
+  fill: gray;
+}
+
+.active {
+  fill: black;
 }

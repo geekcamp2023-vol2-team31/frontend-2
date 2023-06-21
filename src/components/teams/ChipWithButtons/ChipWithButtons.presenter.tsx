@@ -17,7 +17,7 @@ const ChipWithButtons = ({
 }: IChipWithButtonsProps) => {
   return (
     <div className={Styles.wrapper}>
-      <div className={Styles.icon} style={{ backgroundColor: background }}>
+      <div className={Styles.slot} style={{ backgroundColor: background }}>
         {leftSlot}
       </div>
       <div className={Styles.label}>{label}</div>

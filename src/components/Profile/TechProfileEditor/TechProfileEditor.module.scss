@@ -68,6 +68,9 @@ button {
   align-items: center;
   gap: 4px;
   color: #676461;
+  p {
+    margin-bottom: 4px;
+  }
 }
 .techContainer {
   padding: 8px;
@@ -78,5 +81,13 @@ button {
 .techFlex {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 8px;
+}
+
+.icon {
+  fill: gray;
+}
+
+.active {
+  fill: black;
 }

@@ -28,21 +28,21 @@ export const Default: Story = {
           className={style.buttonReset}
           onClick={() => console.log("clicked!")}
         >
-          <FlagIcon className={style.button} />
+          <FlagIcon className={style.icon} />
         </ChipButton>
         <ChipButton
           target={{ key: "advanced", level: "advanced" }}
           className={style.buttonReset}
           onClick={() => console.log("clicked!")}
         >
-          <DrawIcon className={style.button} />
+          <DrawIcon className={style.icon} />
         </ChipButton>
         <ChipButton
           target={{ key: "expert", level: "expert" }}
           className={style.buttonReset}
           onClick={() => console.log("clicked!")}
         >
-          <SchoolIcon className={style.active} />
+          <SchoolIcon className={style.icon} />
         </ChipButton>
         <ChipButton
           target={{ key: "delete", level: "delete" }}

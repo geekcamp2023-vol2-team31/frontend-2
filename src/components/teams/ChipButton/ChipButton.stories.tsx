@@ -17,7 +17,7 @@ type Story = StoryObj<typeof ChipButton>;
 export const Beginner: Story = {
   args: {
     target: { key: "beginner", level: "beginner" },
-    children: <FlagIcon className={style.button} />,
+    children: <FlagIcon className={style.icon} />,
     className: style.buttonReset,
     onClick: () => console.log("clicked!"),
   },
@@ -27,7 +27,7 @@ export const Beginner: Story = {
 export const Advanced: Story = {
   args: {
     target: { key: "advanced", level: "advanced" },
-    children: <DrawIcon className={style.button} />,
+    children: <DrawIcon className={style.icon} />,
     className: style.buttonReset,
     onClick: () => console.log("clicked!"),
   },
@@ -37,7 +37,7 @@ export const Advanced: Story = {
 export const Expert: Story = {
   args: {
     target: { key: "expert", level: "expert" },
-    children: <SchoolIcon className={style.active} />,
+    children: <SchoolIcon className={style.icon} />,
     className: style.buttonReset,
     onClick: () => console.log("clicked!"),
   },
