@@ -1,25 +1,30 @@
-.title {
-  font-size: 16px;
-  margin-bottom: 16px;
-}
-
 .container {
+  .title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
   background-color: #f8f6f2;
   border-radius: 16px;
   padding: 16px;
+
   p {
     color: #676461;
     margin-bottom: 16px;
   }
-}
 
-.buttonContainer {
-  display: flex;
-  gap: 8px;
-}
+  .buttonContainer {
+    display: flex;
+    gap: 8px;
+  }
 
-.button {
-  background-color: #fcfaf8;
-  color: #676461;
-  border: 1px solid #ece8e3;
+  .button {
+    cursor: pointer;
+    background-color: #fcfaf8;
+    font-size: small;
+    color: #676461;
+    border: 1px solid #ece8e3;
+    border-radius: 4px;
+    padding: 2px;
+  }
 }
