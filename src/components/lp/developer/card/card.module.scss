@@ -1,0 +1,30 @@
+.card {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border: solid 1px black;
+  .image {
+    border-radius: 50%;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .name {
+      flex: 1;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .bio {
+      flex: 1;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 100%;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
