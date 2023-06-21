@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { TeamSelector } from "./TeamSelector";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const meta: Meta<typeof TeamSelector> = {
   title: "TeamSelector",
@@ -9,13 +8,22 @@ const meta: Meta<typeof TeamSelector> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof TeamSelector>;
-const queryClient = new QueryClient();
 
-export const Primary: Story = {
-  render: () => (
-    <QueryClientProvider client={queryClient}>
-      <TeamSelector />
-    </QueryClientProvider>
-  ),
+export const Default: StoryObj<typeof TeamSelector> = {};
+Default.args = {
+  belongs: [
+    {
+      id: "1",
+      name: "アイディア出しズ",
+    },
+    {
+      id: "2",
+      name: "アイディア出しズ2",
+    },
+  ],
+};
+
+export const WithoutTeams: StoryObj<typeof TeamSelector> = {};
+WithoutTeams.args = {
+  belongs: [],
 };

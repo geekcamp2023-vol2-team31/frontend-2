@@ -42,6 +42,23 @@
     color: #676461;
   }
 
+  .teamList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 12px;
+    .teamListItem {
+      color: #666360;
+      border-radius: 4px;
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
   .formContainer {
     display: flex;
     align-items: center;
