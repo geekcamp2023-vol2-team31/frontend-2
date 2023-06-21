@@ -53,12 +53,19 @@ const uniqueId = (() => {
   };
 })();
 
+/**
+ * interface IComment {
+ *   id: string;
+ *   value: string;
+ *   type: "problems" | "goals" | "solutions";
+ * }
+ */
 let comments = [
-  { id: "1", content: "コメント1", columnId: "1" },
-  { id: "2", content: "コメント2", columnId: "1" },
-  { id: "3", content: "コメント3", columnId: "2" },
-  { id: "4", content: "コメント4", columnId: "3" },
-  { id: "5", content: "コメント5", columnId: "3" },
+  { id: "1", value: "コメント1", type: "problem" },
+  { id: "2", value: "コメント2", type: "problem" },
+  { id: "3", value: "コメント3", type: "goal" },
+  { id: "4", value: "コメント4", type: "solution" },
+  { id: "5", value: "コメント5", type: "solution" },
 ];
 
 let products = [
@@ -71,8 +78,8 @@ let products = [
 ];
 
 let links = [
-  { id: "1", left: { commentId: "1" }, right: { commentId: "3" } },
-  { id: "2", left: { commentId: "3" }, right: { commentId: "4" } },
+  { id: "1", left: comments[0], right: comments[2] },
+  { id: "2", left: comments[2], right: comments[3] },
 ];
 // ↑ ダミーデータの宣言 ↑
 
@@ -205,8 +212,8 @@ app.delete("/teams/:teamId", (req, res) => {
  *  Response(暫定): {
  *    comments: {
  *      id: string;
- *      content: string;
- *      columnId: "1" | "2" | "3";
+ *      value: string;
+ *      type: "problem" | "goal" | "solution";
  *    }[];
  *  }
  */
@@ -219,7 +226,8 @@ app.get("/teams/:teamId/comments", (req, res) => {
  *  Request(暫定): {
  *    comment: {
  *      content: string;
- *      columnId: "1" | "2" | "3";
+ *      value: string;
+ *      type: "problem" | "goal" | "solution";
  *    };
  *  }
  */
@@ -235,7 +243,7 @@ app.post("/teams/:teamId/comments", (req, res) => {
 /**
  *  Request(暫定): {
  *    comment: {
- *      content: string;
+ *      value: string;
  *    };
  *  }
  */
@@ -312,8 +320,8 @@ app.put("/teams/:teamId/products/:productId", (req, res) => {
  * Response(暫定): {
  *   links: {
  *     id: string;
- *     left: { commentId: string };
- *     right: { commentId: string };
+ *     left: Comment;
+ *     right: Comment;
  *   }[];
  * }
  */
@@ -325,8 +333,8 @@ app.get("/teams/:teamId/links", (req, res) => {
 /**
  * Request(暫定): {
  *   link: {
- *     left: { commentId: string };
- *     right: { commentId: string };
+ *     left: Comment;
+ *     right: Comment;
  *   };
  * }
  */
