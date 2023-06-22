@@ -1,8 +1,14 @@
+// 環境変数 NEXT_PUBLIC_BACKEND_BASE_URL が設定されている必要がある
+let baseURL = "";
+if (process.env && process.env["NEXT_PUBLIC_BACKEND_BASE_URL"]) {
+  baseURL = process.env["NEXT_PUBLIC_BACKEND_BASE_URL"];
+}
+
 const requests = async <T = unknown>(
-  input: RequestInfo | URL,
+  path: string, // リクエストのパス 例: "/users/me"
   init?: RequestInit | undefined
 ) => {
-  const req = await fetch(input, init);
+  const req = await fetch(`${baseURL}${path}`, init);
   return (await req.json()) as unknown as T;
 };
 

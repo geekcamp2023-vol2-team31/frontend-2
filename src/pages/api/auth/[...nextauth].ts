@@ -12,8 +12,14 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt({ token, account }) {
-      token.accessToken = account?.access_token;
+    jwt({ token, account, user }) {
+      console.log("agaga", account?.access_token);
+      if (account && user) {
+        return {
+          ...token,
+          accessToken: account?.access_token,
+        };
+      }
       return token;
     },
     session({ session, token }) {
