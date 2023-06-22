@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { ITechListItem } from "../TechListItem";
-import style from "./EditIdeaSideBar.module.scss";
+import style from "./ProductContainer.module.scss";
 import { CloseIcon } from "@/assets/close";
 import TechListItem from "../TechListItem/TechListItem";
 
