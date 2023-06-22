@@ -1,0 +1,54 @@
+.buttonContainer {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.container {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fcfaf8;
+  color: #676461;
+  border: 1px solid #ece8e3;
+  border-radius: 4px;
+  width: fit-content;
+  height: 32px;
+}
+
+.inputContainer {
+  position: relative;
+}
+.inputContainer::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: #979490;
+  border-radius: 50%;
+  margin-right: 8px;
+  align-items: center;
+  justify-items: center;
+  position: absolute;
+  top: 0px;
+}
+
+.input {
+  margin-left: 28px;
+  width: 40px;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+}
