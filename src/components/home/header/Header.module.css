@@ -37,6 +37,8 @@
   outline: none;
 
   width: 100%;
+  height: 42px;
+  padding: 0px 4px;
   border: 1px solid #ece8e3;
   color: #676461;
 }

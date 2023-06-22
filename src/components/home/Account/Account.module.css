@@ -11,10 +11,12 @@ button {
 
 p {
   color: #676461;
+  margin-bottom: 16px;
 }
 
 .title {
   font-size: 16px;
+  margin-bottom: 16px;
 }
 
 .container {
