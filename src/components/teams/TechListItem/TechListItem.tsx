@@ -66,7 +66,6 @@ const TechListItem = ({
           {expertUsers.length}
         </div>
         <button className={classes.action} onClick={handleActionClick}>
-
           {actionType &&
             (actionType === "plus" ? (
               <PlusIcon className={classes.action} />
