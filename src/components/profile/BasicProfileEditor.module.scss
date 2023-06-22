@@ -28,43 +28,43 @@
     margin-top: 8px;
     font-weight: 400;
   }
-}
 
-.title {
-  font-size: 18px;
-  font-weight: bold;
-}
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+  }
 
-.description {
-  color: #676461;
-  margin-bottom: 16px;
-}
+  .description {
+    color: #676461;
+    margin-bottom: 16px;
+  }
 
-.input {
-  background-color: #fff;
-  padding: 4px 8px;
-  margin-bottom: 8px;
-}
+  .input {
+    background-color: #fff;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+  }
 
-.label {
-  color: #676461;
-  font-weight: lighter;
-}
+  .label {
+    color: #676461;
+    font-weight: lighter;
+  }
 
-.buttonContainer {
-  display: flex;
-  gap: 8px;
-  justify-content: end;
-}
+  .buttonContainer {
+    display: flex;
+    gap: 8px;
+    justify-content: end;
+  }
 
-.undo {
-  background-color: #fcfaf8;
-  color: #676461;
-  border: 1px solid #ece8e3;
-}
+  .undo {
+    background-color: #fcfaf8;
+    color: #676461;
+    border: 1px solid #ece8e3;
+  }
 
-.save {
-  background-color: #c7460c;
-  color: #fff;
-  border: 1px solid #7b2a03;
+  .save {
+    background-color: #c7460c;
+    color: #fff;
+    border: 1px solid #7b2a03;
+  }
 }
