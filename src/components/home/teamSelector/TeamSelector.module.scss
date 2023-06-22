@@ -1,0 +1,84 @@
+.container {
+  background-color: #f8f6f2;
+  border-radius: 16px;
+  padding: 16px;
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .subTitle {
+    font-size: 16px;
+    color: #676461;
+    display: flex;
+    margin-bottom: 8px;
+  }
+
+  button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font: inherit;
+    outline: none;
+    margin: 0;
+  }
+  input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font: inherit;
+    outline: none;
+    flex: 1;
+  }
+
+  p {
+    color: #676461;
+  }
+
+  .teamList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 12px;
+    .teamListItem {
+      color: #666360;
+      border-radius: 4px;
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  .formContainer {
+    display: flex;
+    align-items: center;
+    gap: 0px 16px;
+    margin-bottom: 16px;
+  }
+
+  .input {
+    border: 1px solid #ece8e3;
+    border-radius: 6px;
+    color: #676461;
+    background-color: #fff;
+    padding: 4px 4px;
+  }
+
+  .button {
+    background-color: #c7460c;
+    color: #fff;
+    border: 1px solid #7b2a03;
+    border-radius: 4px;
+    width: 112px;
+  }
+}
