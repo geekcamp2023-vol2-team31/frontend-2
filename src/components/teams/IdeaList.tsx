@@ -33,7 +33,7 @@ interface IIdeaListProps {
   }) => void;
 }
 
-interface IIdeaListChangeItemsHeightEvent {
+export interface IIdeaListChangeItemsHeightEvent {
   id: string;
   items: {
     id: string;
