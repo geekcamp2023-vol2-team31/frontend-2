@@ -6,7 +6,7 @@ interface IInterelementLink {
   y0: number;
   x1: number;
   y1: number;
-  emphasized: boolean;
+  emphasized?: true;
 }
 
 const InterelementLink: FC<IInterelementLink> = ({
