@@ -23,6 +23,7 @@
   }
 
   button {
+    cursor: pointer;
     border-radius: 4px;
     padding: 4px 8px;
     margin-top: 8px;
@@ -57,12 +58,14 @@
   }
 
   .undo {
+    cursor: pointer;
     background-color: #fcfaf8;
     color: #676461;
     border: 1px solid #ece8e3;
   }
 
   .save {
+    cursor: pointer;
     background-color: #c7460c;
     color: #fff;
     border: 1px solid #7b2a03;
