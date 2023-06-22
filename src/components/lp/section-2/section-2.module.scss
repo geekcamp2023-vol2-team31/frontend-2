@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1024px;
+  gap: 32px;
+  padding: 20px;
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: #f2f4f8;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    @media screen and (min-width: 640px) {
+      flex-direction: row;
+      &:nth-child(odd) {
+        flex-direction: row-reverse;
+      }
+    }
+    .text {
+      font-weight: 700;
+      font-size: 20px;
+      flex: 1;
+      word-break: keep-all;
+      text-align: center;
+    }
+    .image {
+      flex: 1;
+    }
+  }
+}

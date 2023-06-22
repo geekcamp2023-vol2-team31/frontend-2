@@ -4,8 +4,8 @@ import GithubProvider from "next-auth/providers/github";
 export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
     }),
   ],
   session: {
@@ -13,14 +13,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
-      }
+      token.accessToken = account?.access_token;
       return token;
     },
     session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      return session;
+      return {
+        ...session,
+        accessToken: token.accessToken,
+      };
     },
   },
 };
