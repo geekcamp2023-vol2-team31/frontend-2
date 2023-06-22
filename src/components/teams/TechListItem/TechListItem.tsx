@@ -11,7 +11,7 @@ export interface ITechListItem {
   label: string;
   leftSlot: ReactNode;
   users: ITechListUser[];
-  actionType: "plus" | "minus";
+  actionType?: "plus" | "minus"; // undefinedの場合、アクションボタンを非表示
   onActionClick: (event: { id: string; actionType: "plus" | "minus" }) => void;
 }
 
@@ -29,7 +29,7 @@ const TechListItem = ({
   actionType,
   onActionClick,
 }: ITechListItem) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const usersOfLevel = (users: ITechListUser[], level: string) => {
     return users.filter((user) => user.level === level);
   };
@@ -43,7 +43,9 @@ const TechListItem = ({
 
   const handleActionClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    onActionClick({ id, actionType });
+    if (actionType) {
+      onActionClick({ id, actionType });
+    }
   };
 
   return (
@@ -64,11 +66,13 @@ const TechListItem = ({
           {expertUsers.length}
         </div>
         <button className={classes.action} onClick={handleActionClick}>
-          {actionType === "plus" ? (
-            <PlusIcon className={classes.action} />
-          ) : (
-            <MinusIcon className={classes.action} />
-          )}
+
+          {actionType &&
+            (actionType === "plus" ? (
+              <PlusIcon className={classes.action} />
+            ) : (
+              <MinusIcon className={classes.action} />
+            ))}
         </button>
       </div>
       {isOpen && (

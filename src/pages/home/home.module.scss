@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 900px;
+  margin: 24px auto;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  @media screen and (min-width: 800px) {
+    flex-direction: row;
+    -webkit-box-align: center;
+    justify-content: center;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+  }
+}

@@ -1,6 +1,4 @@
-input,
-button,
-textarea {
+.button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -9,20 +7,6 @@ textarea {
   border-radius: 0;
   font: inherit;
   outline: none;
-}
-
-label,
-input,
-textarea {
-  display: block;
-  min-width: 100%;
-}
-
-button {
-  border-radius: 4px;
-  padding: 4px 8px;
-  margin-top: 8px;
-  font-weight: 400;
 }
 
 .container {
@@ -56,16 +40,54 @@ button {
   display: flex;
   gap: 8px;
   justify-content: end;
+  border-radius: 4px;
 }
 
 .undo {
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 8px;
+  font-weight: 400;
   background-color: #fcfaf8;
   color: #676461;
   border: 1px solid #ece8e3;
 }
 
 .save {
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 8px;
+  font-weight: 400;
   background-color: #c7460c;
   color: #fff;
   border: 1px solid #7b2a03;
+}
+
+.techTitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #676461;
+  p {
+    margin-bottom: 4px;
+  }
+}
+.techContainer {
+  padding: 8px;
+  background-color: #fff;
+  border: solid 1px #ece8e3;
+  margin-bottom: 8px;
+}
+.techFlex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.icon {
+  fill: gray;
+}
+
+.active {
+  fill: black;
 }

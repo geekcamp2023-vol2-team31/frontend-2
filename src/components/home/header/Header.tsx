@@ -1,5 +1,5 @@
 import { FC } from "react";
-import style from "./Header.module.css";
+import style from "./Header.module.scss";
 interface HeaderProps {
   title: string;
   invidationCode?: string;
