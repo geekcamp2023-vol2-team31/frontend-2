@@ -13,10 +13,13 @@ const ChipWithButtons = ({
   leftSlot,
   label,
   buttonGroup,
+  background,
 }: IChipWithButtonsProps) => {
   return (
     <div className={Styles.wrapper}>
-      <div className={Styles.icon}>{leftSlot}</div>
+      <div className={Styles.slot} style={{ backgroundColor: background }}>
+        {leftSlot}
+      </div>
       <div className={Styles.label}>{label}</div>
       <div className={Styles.buttons}>{buttonGroup}</div>
     </div>

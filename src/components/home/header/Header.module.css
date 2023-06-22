@@ -1,4 +1,10 @@
-button {
+.header {
+  padding: 8px 0px;
+  border-bottom: 2px solid #ece8e3;
+  display: flex;
+  gap: 8px;
+}
+.buttonContainer {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -11,28 +17,7 @@ button {
   border: 1px solid #ece8e3;
   color: #676461;
   white-space: nowrap;
-}
-input {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  font: inherit;
-  outline: none;
-}
 
-.header {
-  padding: 8px 0px;
-  border-bottom: 2px solid #ece8e3;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.buttonContainer {
-  height: 42px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -42,6 +27,15 @@ input {
   border-radius: 4px;
 }
 .input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+
   width: 100%;
   height: 42px;
   padding: 0px 4px;

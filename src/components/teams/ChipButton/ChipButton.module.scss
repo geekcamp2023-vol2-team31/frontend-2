@@ -1,0 +1,18 @@
+.button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  outline: none;
+}
+
+.icon {
+  fill: gray;
+}
+
+.active {
+  fill: black;
+}
