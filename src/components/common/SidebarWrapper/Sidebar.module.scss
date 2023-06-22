@@ -1,0 +1,13 @@
+.open {
+  position: absolute;
+  transition: transform 0.3s;
+  right: 0;
+  transform: translateX(0%);
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  transition: transform 0.3s;
+  transform: translateX(100%);
+}
