@@ -15,11 +15,18 @@ interface INewChipEnterEvent {
 export const NewChip: FC<INewChip> = ({ id, onEnter, children }) => {
   const skillNameRef = useRef<HTMLInputElement>(null);
   const handleEnter = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && onEnter)
+    if (event.key === "Enter" && onEnter) {
       onEnter({ id, label: skillNameRef.current?.value ?? "" });
+      if (skillNameRef.current) {
+        skillNameRef.current.value = "";
+      }
+    }
   };
   const handleClick = () => {
     if (onEnter) onEnter({ id, label: skillNameRef.current?.value ?? "" });
+    if (skillNameRef.current) {
+      skillNameRef.current.value = "";
+    }
   };
 
   return (
