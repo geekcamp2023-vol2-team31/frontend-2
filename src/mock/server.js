@@ -32,7 +32,7 @@ let teams = [
   },
 ];
 
-const user = {
+let user = {
   icon: undefined,
   id: "1",
   name: "Yamada Taro",
@@ -43,6 +43,11 @@ const user = {
   ],
   owns: [teams[0]],
   belongs: [teams[0], teams[1]],
+};
+
+let user2 = {
+  ...user,
+  techs: [{ ...techs[2], level: "advanced" }],
 };
 
 const newTeam = { id: "3", name: "teamAdded", invitationCode: "CODE3" };
@@ -112,13 +117,11 @@ app.get("/users/me", (req, res) => {
 // PUT /users/me
 // Response: IGetUsersMeResponse
 app.put("/users/me", (req, res) => {
-  const {
-    user: { icon, name, bio, techs },
-  } = req.body;
-  user.icon = icon;
-  user.name = name;
-  user.bio = bio;
-  user.techs = techs;
+  const { user: newUser } = req.body;
+  user = {
+    ...user,
+    ...newUser,
+  };
   res.send({ success: true });
 });
 
@@ -145,6 +148,10 @@ app.post("/teams", (req, res) => {
       invitationCode: "INVITATION_CODE_DUMMY",
       id,
       name,
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,
@@ -177,6 +184,10 @@ app.get("/teams/:teamId", (req, res) => {
     team: {
       ...team,
       invitationCode: "INVITATION_CODE_DUMMY",
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,

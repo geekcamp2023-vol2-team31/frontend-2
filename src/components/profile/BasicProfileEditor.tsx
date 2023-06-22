@@ -16,22 +16,30 @@ export const BasicProfileEditor: FC = () => {
     queryFn: getUsersMe,
   });
 
-  const postUsersMe = (body: IPutUsersMeBody) => {
-    return requests(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-      method: "POST",
+  const putUsersMe = (body: { user: Partial<IPutUsersMeBody["user"]> }) => {
+    return requests("/users/me", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
   };
-  const mutation = useMutation({ mutationFn: postUsersMe });
+  const mutation = useMutation(putUsersMe);
   const onSubmit = () => {
     mutation.mutate({
       user: {
         name: name,
         bio: bio,
-        icon: "",
-        techs: [],
       },
     });
+  };
+
+  // APIデータに合わせる
+  const resetInput = () => {
+    if (!query.data) return;
+    setName(query.data.user.name);
+    setBio(query.data.user.bio);
   };
 
   useEffect(() => {
@@ -67,7 +75,9 @@ export const BasicProfileEditor: FC = () => {
       </div>
       <div>
         <div className={style.buttonContainer}>
-          <button className={style.undo}>変更を戻す</button>
+          <button className={style.undo} onClick={resetInput}>
+            変更を戻す
+          </button>
           <button onClick={onSubmit} className={style.save}>
             変更を保存
           </button>
