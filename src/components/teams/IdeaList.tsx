@@ -25,7 +25,7 @@ interface IIdeaListProps {
   onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
 }
 
-interface IIdeaListChangeItemsHeightEvent {
+export interface IIdeaListChangeItemsHeightEvent {
   id: string;
   items: {
     id: string;
@@ -90,7 +90,7 @@ const IdeaList: FC<IIdeaListProps> = ({
 
       onChangeItemsHeight({ id, items: resultItems });
     }
-  }, [id, itemHeights, onChangeItemsHeight]);
+  }, [id, itemHeights /*, onChangeItemsHeight*/]);
 
   const handleChangeHeight = ({
     id,
