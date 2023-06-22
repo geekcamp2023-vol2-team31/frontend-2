@@ -32,7 +32,7 @@ let teams = [
   },
 ];
 
-const user = {
+let user = {
   icon: undefined,
   id: "1",
   name: "Yamada Taro",
@@ -112,13 +112,11 @@ app.get("/users/me", (req, res) => {
 // PUT /users/me
 // Response: IGetUsersMeResponse
 app.put("/users/me", (req, res) => {
-  const {
-    user: { icon, name, bio, techs },
-  } = req.body;
-  user.icon = icon;
-  user.name = name;
-  user.bio = bio;
-  user.techs = techs;
+  const { user: newUser } = req.body;
+  user = {
+    ...user,
+    ...newUser,
+  };
   res.send({ success: true });
 });
 
