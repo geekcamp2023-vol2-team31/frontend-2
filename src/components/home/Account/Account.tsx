@@ -1,9 +1,14 @@
 import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 import { requests } from "../../../utils/requests";
-import style from "./Account.module.css";
+import style from "./Account.module.scss";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
-export const Account = () => {
+export const Account = ({
+  onClickDeleteAccount,
+}: {
+  onClickDeleteAccount?: () => void;
+}) => {
   const getUsersMe = () => {
     return requests("/users/me") as unknown as IPutUsersMeBody;
   };
@@ -19,9 +24,18 @@ export const Account = () => {
         <strong>{query.data?.user.name}</strong>としてログイン中
       </p>
       <div className={style.buttonContainer}>
-        <button className={style.button}>プロフィールの編集</button>
-        <button className={style.button}>ログアウト</button>
-        <button className={style.button}>アカウントの削除</button>
+        <Link href="/profile" className={style.button}>
+          プロフィールの編集
+        </Link>
+        <Link href="/logout" className={style.button}>
+          ログアウト
+        </Link>
+        <button
+          className={style.button}
+          onClick={() => onClickDeleteAccount && onClickDeleteAccount()}
+        >
+          アカウントの削除
+        </button>
       </div>
     </div>
   );
