@@ -6,7 +6,7 @@ import { SchoolIcon } from "@/assets/schoolIcon";
 import { DrawIcon } from "@/assets/drawIcon";
 import { MinusIcon } from "@/assets/minusIcon";
 
-interface ITechListItem {
+export interface ITechListItem {
   id: string;
   label: string;
   leftSlot: ReactNode;
