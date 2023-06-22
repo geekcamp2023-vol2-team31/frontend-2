@@ -46,7 +46,6 @@ const Home = () => {
   };
 
   const handleClickDeleteAccount = () => {
-    console.log("ad");
     void requests<string>("/auth", {
       method: "DELETE",
     }).then(() => {
