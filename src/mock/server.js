@@ -45,6 +45,11 @@ let user = {
   belongs: [teams[0], teams[1]],
 };
 
+let user2 = {
+  ...user,
+  techs: [{ ...techs[2], level: "advanced" }],
+};
+
 const newTeam = { id: "3", name: "teamAdded", invitationCode: "CODE3" };
 
 const uniqueId = (() => {
@@ -143,6 +148,10 @@ app.post("/teams", (req, res) => {
       invitationCode: "INVITATION_CODE_DUMMY",
       id,
       name,
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,
@@ -175,6 +184,10 @@ app.get("/teams/:teamId", (req, res) => {
     team: {
       ...team,
       invitationCode: "INVITATION_CODE_DUMMY",
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,
