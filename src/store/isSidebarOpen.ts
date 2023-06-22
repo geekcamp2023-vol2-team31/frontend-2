@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-type Sidebar = {
+type IsSidebarOpen = {
   isOpen: boolean;
   toggleOpen: () => void;
 };
 
-export const useSidebar = create<Sidebar>((set) => ({
+export const useIsSidebarOpen = create<IsSidebarOpen>((set) => ({
   isOpen: false,
   toggleOpen: () =>
     set((state) => {
