@@ -32,10 +32,10 @@ export const TeamSelector = ({
   };
   return (
     <div className={style.container}>
-      <h1 className={style.title}>技術COMPへようこそ!</h1>
       {belongs.length > 0 ? (
         <>
-          <h2 className={style.subTitle}>既存のチームに参加</h2>
+          <h1 className={style.title}>あなたのチーム</h1>
+          <h2 className={style.subTitle}>参加しているチーム</h2>
           <div className={style.teamList}>
             {belongs.map((team) => (
               <a
@@ -53,11 +53,14 @@ export const TeamSelector = ({
           </div>
         </>
       ) : (
-        <p>
-          チームで参加するハッカソンのアイディア出しをサポートします!
-          <br />
-          まずはあなたのチームのアイディア出しの準備をしましょう。
-        </p>
+        <>
+          <h1 className={style.title}>技術COMPへようこそ!</h1>
+          <p>
+            チームで参加するハッカソンのアイディア出しをサポートします!
+            <br />
+            まずはあなたのチームのアイディア出しの準備をしましょう。
+          </p>
+        </>
       )}
       <h2 className={style.subTitle}>
         <img src="/assets/join-team.svg" alt="チームに参加" />
