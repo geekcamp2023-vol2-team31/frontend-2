@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { requests } from "@/utils/requests";
 import { useTeamLinks } from "@/hooks/useTeamLinks";
 import { ProductFrame } from "./ProductFrame";
+import { dirname } from "path";
 
 interface IIdeaPageProps {
   teamId: string;
@@ -55,7 +56,8 @@ interface IProduct {
 
 const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   // TODO: エレメントに合わせる
-  const margin = 50;
+  const teamBody = useRef<HTMLDivElement>(null)
+  
   const localLinks: ILink[] = [];
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [commentsSelected, setCommentsSelected] = useState<{ id: string }[]>(
@@ -70,10 +72,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   const column1 = useRef<HTMLDivElement>(null);
   const column2 = useRef<HTMLDivElement>(null);
   const column3 = useRef<HTMLDivElement>(null);
-  const [column1Position, setColumn1Position] = useState<DOMRect | null>(null);
-  const [column2Position, setColumn2Position] = useState<DOMRect | null>(null);
-  const [column3Position, setColumn3Position] = useState<DOMRect | null>(null);
-
+  
   //ｙ座標取得用
   const [item1Heights, setItem1Heights] = useState<ICommentPosition[]>([]);
   const [item2Heights, setItem2Heights] = useState<ICommentPosition[]>([]);
@@ -82,7 +81,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   // ソリューションのIdeaListの境界座標(上下左右)
   const [bbox, setBbox] = useState<IBoundingBox | undefined>(undefined);
   // connectorの情報管理
-  const [connectorToggle] = useState<"left" | "right" | null>(null);
+  const [connectorToggle, setConnectorToggle] = useState<"left" | "right" | null>(null);
 
   // link一覧の取得
   const {
@@ -121,6 +120,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       ],
     });
   };
+
   const handleClickConnector = ({
     id,
     type,
@@ -129,16 +129,17 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     // この関数をmapで渡しているためか、関数内でtemporaryLinkを参照すると
     // うまく反映されていない値が出てくる。
     // そこで手続き全体をsetTemporaryLinkで囲っている
+    console.log(type)
     setTemporaryLink((temporaryLink) => {
       if (
         (target === "left" && type === "problem") ||
         (target === "right" && type === "solution")
       ) {
-        // if (copyToggle) copyLinks.pop();
-        // copyToggle = null;
+        setConnectorToggle(null)
         if (temporaryLink) return undefined;
       }
       // 右端や左端の、対応するtypeがない時はundefinedを返す
+      //TODO setConnectorToggleの調整
       const getCorrespondingType = (
         type: CommentType,
         decided: "left" | "right"
@@ -146,15 +147,18 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
         if (type === "problem") {
           return decided === "right" ? undefined : "goal";
         } else if (type === "goal") {
+          setConnectorToggle(null)
           return decided === "right" ? "problem" : "solution";
         } /* type === "solution" */ else {
           return decided === "right" ? "goal" : undefined;
         }
       };
+
       //片方をクリック中
       //左が固定の時
       if (temporaryLink && temporaryLink.left) {
         // 線を引けるような(対応する)コメントをクリックしたとき
+        setConnectorToggle(null)
         if (
           target === "left" &&
           type === getCorrespondingType(temporaryLink.left.type, "left")
@@ -169,6 +173,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       //右が固定の時
       else if (temporaryLink && temporaryLink.right) {
         // 線を引けるような(対応する)コメントをクリックしたとき
+        setConnectorToggle(null)
         if (
           target === "right" &&
           type === getCorrespondingType(temporaryLink.right.type, "right")
@@ -183,14 +188,17 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       //何もクリックしていないとき
       else {
         if (target === "left") {
+          setConnectorToggle("right")
           return { id: "-1", right: { id, type, value: "" } };
         } else if (target === "right") {
+          setConnectorToggle("left")
           return { id: "-1", left: { id, type, value: "" } };
         }
       }
     });
   };
 
+  useEffect
   const onChangeCheckbox = ({ id, value }: { id: string; value: boolean }) => {
     if (value) {
       // 選択中のコメントに追加
@@ -268,18 +276,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     }
   };
 
-  const getColumnPositions = () => {
-    if (column1.current) {
-      setColumn1Position(column1.current.getBoundingClientRect());
-    }
-    if (column2.current) {
-      setColumn2Position(column2.current.getBoundingClientRect());
-    }
-    if (column3.current) {
-      setColumn3Position(column3.current.getBoundingClientRect());
-    }
-  };
-  useEffect(getColumnPositions, [item1Heights, item1Heights, item1Heights]);
 
   const links =
     isLoadingComments || isLoadingLinks || !linksData
@@ -313,52 +309,52 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     let y1 = 0;
 
     if (!link.left || !link.left.id) {
-      if (cursolPosition) {
+      if (cursolPosition&&teamBody.current) {
         x0 = cursolPosition[0];
-        y0 = cursolPosition[1];
+        y0 = cursolPosition[1] - teamBody.current.offsetTop ;
       }
     } else {
       const id = link.left.id;
       if (link.left.type === "problem") {
-        if (column1Position) x0 = column1Position.right;
+        if (column1.current?.getBoundingClientRect()) x0 = column1.current?.getBoundingClientRect().right;
         const item = item1Heights.find((item) => item.id === id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column1.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column1.current?.offsetTop;
       }
       if (link.left.type === "goal") {
-        if (column2Position) x0 = column2Position.right;
+        if (column2.current?.getBoundingClientRect()) x0 = column2.current?.getBoundingClientRect().right;
         const item = item2Heights.find((item) => item.id === id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column2.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column2.current?.offsetTop;
       }
       if (link.left.type === "solution") {
-        if (column3Position) x0 = column3Position.right;
+        if (column3.current?.getBoundingClientRect()) x0 = column3.current?.getBoundingClientRect().right;
         const item = item3Heights.find((item) => item.id === id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column3.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column3.current?.offsetTop;
       }
     }
     if (!link.right) {
-      if (cursolPosition) {
+      if (cursolPosition&&teamBody.current) {
         x1 = cursolPosition[0];
-        y1 = cursolPosition[1];
+        y1 = cursolPosition[1] - teamBody.current.offsetTop;
       }
     } else {
       const id = link.right.id;
       if (link.right.type === "problem") {
-        if (typeof column1Position?.right === "number")
-          x1 = column1Position.left;
+        if (typeof column1.current?.getBoundingClientRect()?.right === "number")
+          x1 = column1.current?.getBoundingClientRect().left;
         const item = item1Heights.find((item) => item.id === id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column1.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column1.current?.offsetTop;
       }
       if (link.right.type === "goal") {
-        if (typeof column2Position?.right === "number")
-          x1 = column2Position.left;
+        if (typeof column2.current?.getBoundingClientRect()?.right === "number")
+          x1 = column2.current?.getBoundingClientRect().left;
         const item = item2Heights.find((item) => item.id === id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column2.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column2.current?.offsetTop;
       }
       if (link.right.type === "solution") {
-        if (typeof column3Position?.right === "number")
-          x1 = column3Position.left;
+        if (typeof column3.current?.getBoundingClientRect()?.right === "number")
+          x1 = column3.current?.getBoundingClientRect().left;
         const item = item3Heights.find((item) => item.id === id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column3.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column3.current?.offsetTop;
       }
     }
     return { id: link.id, x0, y0, x1, y1 };
@@ -376,19 +372,19 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       }
     } else {
       if (link.left.type === "problem") {
-        if (column1Position) x0 = column1Position.right;
+        if (column1.current?.getBoundingClientRect()) x0 = column1.current?.getBoundingClientRect().right;
         const item = item1Heights.find((item) => item.id === link.left.id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column1.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column1.current?.offsetTop;
       }
       if (link.left.type === "goal") {
-        if (column2Position) x0 = column2Position.right;
+        if (column2.current?.getBoundingClientRect()) x0 = column2.current?.getBoundingClientRect().right;
         const item = item2Heights.find((item) => item.id === link.left.id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column2.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column2.current?.offsetTop;
       }
       if (link.left.type === "solution") {
-        if (column3Position) x0 = column3Position.right;
+        if (column3.current?.getBoundingClientRect()) x0 = column3.current?.getBoundingClientRect().right;
         const item = item3Heights.find((item) => item.id === link.left.id);
-        if (item) y0 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column3.current?.offsetTop ==="number") y0 = item.offsetY + item.height / 2 + column3.current?.offsetTop;
       }
     }
     if (link.right.id === "-1") {
@@ -398,22 +394,22 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       }
     } else {
       if (link.right.type === "problem") {
-        if (typeof column1Position?.right === "number")
-          x1 = column1Position.left;
+        if (typeof column1.current?.getBoundingClientRect()?.right === "number")
+          x1 = column1.current?.getBoundingClientRect().left;
         const item = item1Heights.find((item) => item.id === link.right.id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column1.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column1.current?.offsetTop;
       }
       if (link.right.type === "goal") {
-        if (typeof column2Position?.right === "number")
-          x1 = column2Position.left;
+        if (typeof column2.current?.getBoundingClientRect()?.right === "number")
+          x1 = column2.current?.getBoundingClientRect().left;
         const item = item2Heights.find((item) => item.id === link.right.id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column2.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column2.current?.offsetTop;
       }
       if (link.right.type === "solution") {
-        if (typeof column3Position?.right === "number")
-          x1 = column3Position.left;
+        if (typeof column3.current?.getBoundingClientRect()?.right === "number")
+          x1 = column3.current?.getBoundingClientRect().left;
         const item = item3Heights.find((item) => item.id === link.right.id);
-        if (item) y1 = item.offsetY + item.height / 2 + margin;
+        if (item&&typeof column3.current?.offsetTop ==="number") y1 = item.offsetY + item.height / 2 + column3.current?.offsetTop;
       }
     }
     return { id: link.id, x0, y0, x1, y1 };
@@ -421,10 +417,17 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
 
   // TODO: 画面サイズ変更に対応するには上が適切と思われるがエラーが出るため保留
   // const linkPositions = useMemo(() => links.map(getLinkPosition), [links]);
+
+  // const linkPositions = temporaryLink
+  //   ? [...links.map(getLinkPosition), getTempPosition(temporaryLink)]
+  //   : links.map(getLinkPosition)
+
+
+  // const [linkPositions, setLinkPositions] = useState();
   const linkPositions = temporaryLink
     ? [...links.map(getLinkPosition), getTempPosition(temporaryLink)]
-    : links.map(getLinkPosition);
-
+    : links.map(getLinkPosition)
+    console.log(linkPositions)
   // Linkのうち確定している方
   // let copyToggle: "left" | "right" | null = null;
 
@@ -528,6 +531,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   };
 
   return (
+    <div ref={teamBody}>
     <div className={styles.Idea}>
       <div className={styles.list} ref={column1}>
         <IdeaList
@@ -597,6 +601,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
           )}
         </Fragment>
       ))}
+    </div>
     </div>
   );
 };

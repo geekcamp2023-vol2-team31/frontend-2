@@ -31,6 +31,7 @@ const InterelementLink: FC<IInterelementLink> = ({
   }, [linkRef]);
 
   const redraw = () => {
+    console.log(connectorToggle)
     if (!linkRef.current) {
       return;
     }
