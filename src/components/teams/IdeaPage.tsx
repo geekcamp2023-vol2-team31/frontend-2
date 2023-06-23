@@ -18,29 +18,29 @@ interface IItems {
   value: string;
   onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
 }
-interface Ilists {
+interface ILists {
   items: {
     id: string;
     value: string;
     onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
   }[];
 }
-interface linkElement {
+interface ILinkElement {
   id: string;
   type: "problem" | "solution" | "goal" | "wait";
   value: string;
 }
 export interface ILink {
   id: string;
-  left: linkElement;
-  right: linkElement;
+  left: ILinkElement;
+  right: ILinkElement;
 }
 
 const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
   const margin = 50;
   const localLinks: ILink[] = [];
   //データ取得
-  const [lists, setLists] = useState<Ilists[]>([
+  const [lists, setLists] = useState<ILists[]>([
     { items: [] },
     { items: [] },
     { items: [] },
@@ -223,8 +223,8 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     }
     //何もクリックしていないとき
     else {
-      let left: linkElement = { type: "wait", id: "0", value: "" };
-      let right: linkElement = { type: "wait", id: "0", value: "" };
+      let left: ILinkElement = { type: "wait", id: "0", value: "" };
+      let right: ILinkElement = { type: "wait", id: "0", value: "" };
       if (target === "left") {
         copyToggle = "right";
         right = { type: type, id: id, value: "" };
