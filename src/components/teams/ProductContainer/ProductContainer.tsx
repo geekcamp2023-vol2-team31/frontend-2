@@ -53,7 +53,7 @@ export const ProductContainer: FC<Props> = ({ productId, teamId }) => {
     return productsData?.products[selectedProductIndex];
   }, [productId, productsData?.products]);
 
-  const toggleOpen = useIsSidebarOpen((state) => state.toggleOpen);
+  const toggleOpen = useIsSidebarOpen((state) => state.toggleSidebar);
 
   return (
     <div className={style.container}>

@@ -17,7 +17,7 @@ export const TeamSettingsContainer: FC<Props> = ({ teamId }) => {
   const getTeam: () => Promise<ITeamGetResponse> = () =>
     requests(`/teams/${teamId}`);
   const { data } = useQuery<ITeamGetResponse>(["teams"], getTeam);
-  const toggleOpen = useIsSidebarOpen((state) => state.toggleOpen);
+  const toggleOpen = useIsSidebarOpen((state) => state.toggleSidebar);
   const teamMember = useMemo(() => {
     return data && data.team.members
       ? [...data.team.members, data.team.owner]

@@ -2,13 +2,24 @@ import { create } from "zustand";
 
 type IsSidebarOpen = {
   isOpen: boolean;
-  toggleOpen: () => void;
+  isShowTeamSettingsContainer: boolean;
+  toggleSidebar: () => void;
+  openSidebar: () => void;
 };
 
 export const useIsSidebarOpen = create<IsSidebarOpen>((set) => ({
   isOpen: false,
-  toggleOpen: () =>
+  isShowTeamSettingsContainer: false,
+  toggleSidebar: () =>
     set((state) => {
       return { isOpen: !state.isOpen };
+    }),
+  openSidebar: () =>
+    set(() => {
+      return { isOpen: true };
+    }),
+  toggleIsShowContainer: () =>
+    set((state) => {
+      return { isShowTeamSettingsContainer: !state };
     }),
 }));
