@@ -365,6 +365,7 @@ app.get("/teams/:teamId/links", (req, res) => {
  */
 app.post("/teams/:teamId/links", (req, res) => {
   const { link } = req.body;
+  console.log({ link });
   const newLink = { id: uniqueId(), ...link };
   links.push(newLink);
   res.send(newLink);
