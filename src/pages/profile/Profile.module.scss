@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 900px;
+  gap: 24px;
+  align-items: start;
+  margin: 24px auto;
+  .toggleButton {
+    cursor: pointer;
+    background: #c5471e;
+    color: white;
+    border: 1px solid #7a2b0d;
+    border-radius: 8px;
+    margin-top: 4px;
+    padding: 4px 8px;
+  }
+}

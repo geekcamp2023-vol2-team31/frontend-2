@@ -3,11 +3,16 @@ import style from "./Header.module.scss";
 interface HeaderProps {
   title: string;
   invidationCode?: string;
+  onHomeButtonClick?: () => void;
 }
-export const Header: FC<HeaderProps> = ({ title, invidationCode }) => {
+export const Header: FC<HeaderProps> = ({
+  title,
+  invidationCode,
+  onHomeButtonClick,
+}) => {
   return (
     <header className={style.header}>
-      <button className={style.buttonContainer}>
+      <button className={style.buttonContainer} onClick={onHomeButtonClick}>
         <img src="/assets/apps.svg" alt="" />
         <img src="/assets/logo.svg" alt="ロゴ" />
       </button>

@@ -32,7 +32,7 @@ let teams = [
   },
 ];
 
-const user = {
+let user = {
   icon: undefined,
   id: "1",
   name: "Yamada Taro",
@@ -43,6 +43,11 @@ const user = {
   ],
   owns: [teams[0]],
   belongs: [teams[0], teams[1]],
+};
+
+let user2 = {
+  ...user,
+  techs: [{ ...techs[2], level: "advanced" }],
 };
 
 const newTeam = { id: "3", name: "teamAdded", invitationCode: "CODE3" };
@@ -98,6 +103,11 @@ app.post("/auth", (req, res) => {
   });
 });
 
+// DELETE /auth
+app.delete("/auth", (req, res) => {
+  res.send({ success: true });
+});
+
 // GET /users/me
 // Response: IGetUsersMeResponse
 app.get("/users/me", (req, res) => {
@@ -107,20 +117,18 @@ app.get("/users/me", (req, res) => {
 // PUT /users/me
 // Response: IGetUsersMeResponse
 app.put("/users/me", (req, res) => {
-  const {
-    user: { icon, name, bio, techs },
-  } = req.body;
-  user.icon = icon;
-  user.name = name;
-  user.bio = bio;
-  user.techs = techs;
-  res.send("success");
+  const { user: newUser } = req.body;
+  user = {
+    ...user,
+    ...newUser,
+  };
+  res.send({ success: true });
 });
 
 // PUT /users/me/teams/:invitationCode]
 app.put("/users/me/teams/:invitationCode", (req, res) => {
   user.belongs.push(newTeam);
-  res.send("successs");
+  res.send({ team: newTeam });
 });
 
 // POST /teams
@@ -140,6 +148,10 @@ app.post("/teams", (req, res) => {
       invitationCode: "INVITATION_CODE_DUMMY",
       id,
       name,
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,
@@ -172,6 +184,10 @@ app.get("/teams/:teamId", (req, res) => {
     team: {
       ...team,
       invitationCode: "INVITATION_CODE_DUMMY",
+      techToUsers: [
+        { tech: techs[0], user, level: "beginner" },
+        { tech: techs[1], user: user2, level: "advanced" },
+      ],
       owner: {
         icon: user.icon,
         id: user.id,
@@ -197,7 +213,7 @@ app.put("/teams/:teamId", (req, res) => {
   const teamId = req.params.teamId;
   const { team } = req.body;
   teams = teams.map((t) => (t.id === teamId ? { ...t, ...team } : t));
-  res.send("success");
+  res.send({ success: true });
 });
 
 // DELETE /teams/:teamId
@@ -206,7 +222,7 @@ app.delete("/teams/:teamId", (req, res) => {
   teams = teams.filter((t) => t.id !== teamId);
   user.owns = user.owns.filter((t) => t.id !== teamId);
   user.belongs = user.belongs.filter((t) => t.id !== teamId);
-  res.send("success");
+  res.send({ success: true });
 });
 
 // GET /teams/:teamId/comments
@@ -238,7 +254,7 @@ app.post("/teams/:teamId/comments", (req, res) => {
     comment: { content, columnId },
   } = req.body;
   comments.push({ id: uniqueId, content, columnId });
-  res.send("success");
+  res.send({ success: true });
 });
 
 // PUT /teams/:teamId/comments/:commentId
@@ -254,14 +270,14 @@ app.put("/teams/:teamId/comments/:commentId", (req, res) => {
   comments = comments.map((c) =>
     c.id === commentId ? { ...c, content: req.body.comment.content } : c
   );
-  res.send("success");
+  res.send({ success: true });
 });
 
 // DELETE /teams/:teamId/comments/:commentId
 app.delete("/teams/:teamId/comments/:commentId", (req, res) => {
   const commentId = req.params.commentId;
   comments = comments.filter((c) => c.id !== commentId);
-  res.send("success");
+  res.send({ success: true });
 });
 
 // GET /teams/:teamId/products
@@ -293,7 +309,7 @@ app.post("/teams/:teamId/products", (req, res) => {
     product: { name, comments },
   } = req.body;
   products.push({ id: uniqueId(), name, comments });
-  res.send("success");
+  res.send({ success: true });
 });
 
 // PUT /teams/:teamId/products/:productId
@@ -314,7 +330,7 @@ app.put("/teams/:teamId/products/:productId", (req, res) => {
   products = products.map((p) =>
     p.id === productId ? { ...p, name, comments, techs } : p
   );
-  res.send("success");
+  res.send({ success: true });
 });
 
 // GET /teams/:teamId/links
@@ -351,7 +367,7 @@ app.post("/teams/:teamId/links", (req, res) => {
 app.delete("/teams/:teamId/links/:linkId", (req, res) => {
   const linkId = req.params.linkId;
   links = links.filter((l) => l.id !== linkId);
-  res.send("success");
+  res.send({ success: true });
 });
 
 // GET /techs
@@ -369,7 +385,7 @@ app.put("/techs/:techName", (req, res) => {
     tech: { icon },
   } = req.body;
   techs = techs.filter((t) => (t.name === techName ? { ...t, icon } : t));
-  res.send("success");
+  res.send({ success: true });
 });
 
 app.listen(port, () => {

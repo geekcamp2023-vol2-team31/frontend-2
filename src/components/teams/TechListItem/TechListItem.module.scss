@@ -1,0 +1,48 @@
+.container {
+  padding: 4px;
+  color: #676461;
+  .header {
+    cursor: pointer;
+    display: flex;
+    font-size: 16px;
+    .label {
+      flex: 1;
+    }
+    .tech-count {
+      margin: 0 2px;
+      .icon {
+        margin: 0 4px;
+        fill: gray;
+      }
+    }
+    .action {
+      cursor: pointer;
+      margin-left: 4px;
+      background: none;
+      border: none;
+      fill: gray;
+    }
+  }
+  .detail {
+    border-radius: 4px;
+    background: #f8f6f2;
+    padding: 6px;
+    margin-top: 4px;
+    .tech {
+      display: flex;
+      padding: 4px;
+      .icon {
+        margin-right: 6px;
+        fill: gray;
+        height: 18px;
+        width: 18px;
+      }
+      .list {
+        list-style: none;
+        li {
+          margin-bottom: 6px;
+        }
+      }
+    }
+  }
+}

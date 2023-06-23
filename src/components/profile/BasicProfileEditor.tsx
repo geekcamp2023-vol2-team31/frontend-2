@@ -1,44 +1,24 @@
-import { requests } from "@/utils/requests";
-import style from "./BasicProfileEditor.module.css";
-import { FC, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
+import { useUsersMe } from "@/hooks/useUsersMe";
+import style from "./BasicProfileEditor.module.scss";
+import { FC, useState } from "react";
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const { data, setData } = useUsersMe();
 
-  const getUsersMe = () => {
-    return requests<IPutUsersMeBody>("/users/me");
+  const resetInput = () => {
+    if (!data) return;
+    setName(data.user.name);
+    setBio(data.user.bio);
   };
-  const query = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: getUsersMe,
-  });
 
-  const postUsersMe = (body: IPutUsersMeBody) => {
-    return requests(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
-  };
-  const mutation = useMutation({ mutationFn: postUsersMe });
   const onSubmit = () => {
-    mutation.mutate({
-      user: {
-        name: name,
-        bio: bio,
-        icon: "",
-        techs: [],
-      },
+    if (!data) return;
+    setData({
+      user: { ...data.user, name, bio },
     });
   };
-
-  useEffect(() => {
-    if (!query.data) return;
-    setName(query.data.user.name);
-    setBio(query.data.user.bio);
-  }, [query.data]);
 
   return (
     <div className={style.container}>
@@ -67,7 +47,9 @@ export const BasicProfileEditor: FC = () => {
       </div>
       <div>
         <div className={style.buttonContainer}>
-          <button className={style.undo}>変更を戻す</button>
+          <button className={style.undo} onClick={resetInput}>
+            変更を戻す
+          </button>
           <button onClick={onSubmit} className={style.save}>
             変更を保存
           </button>
