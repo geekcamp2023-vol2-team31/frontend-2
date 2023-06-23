@@ -1,9 +1,8 @@
+import { Account } from "@/components/home/Account/Account";
 import { Header } from "@/components/home/header/Header";
 import { TeamSelector } from "@/components/home/teamSelector/TeamSelector";
-import { Account } from "@/components/home/Account/Account";
+import { useUsersMe } from "@/hooks/useUsersMe";
 import { requests } from "@/utils/requests";
-import { IGetUsersMeResponse } from "@/@types/user/IGetUsersMeResponse";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import style from "./home.module.scss";
 
@@ -11,10 +10,7 @@ const Home = () => {
   const router = useRouter();
 
   // TODO: useUsersMe を利用できた方が良い
-  const { data, isLoading } = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: () => requests<IGetUsersMeResponse>("/users/me"),
-  });
+  const { data, isLoading } = useUsersMe();
 
   const handleClickTeam = ({ team: { id } }: { team: { id: string } }) => {
     void router.push(`/teams/${id}`);
@@ -56,7 +52,7 @@ const Home = () => {
   if (isLoading) {
     return null;
   }
-  const belongs = data?.user.belongs || [];
+  const belongs = data?.user.teamsBelongs || [];
   return (
     <div>
       <Header title="ようこそ!" />
