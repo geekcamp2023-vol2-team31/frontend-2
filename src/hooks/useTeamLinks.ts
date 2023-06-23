@@ -28,6 +28,9 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
   const putLink = (linkId: string, data: ITeamLinkPutBody) =>
     requests<unknown>(`${url}/${linkId}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
   const deleteLink = (linkId: string) =>

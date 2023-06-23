@@ -20,11 +20,17 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
   const postComment = (data: ITeamCommentsPostBody) =>
     requests<ITeamCommentsPostResponse>(url, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
   const putComment = (commentId: string, data: ITeamCommentPutBody) =>
     requests<unknown>(`${url}/${commentId}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
   const deleteComment = (commentId: string) =>
