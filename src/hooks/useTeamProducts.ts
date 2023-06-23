@@ -72,16 +72,21 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
         const oldProduct = data.products.find(
           (oldProduct) => product.id === oldProduct.id
         );
-        const commentsIntersection = intersection(oldProduct?.comments ?? [], product.comments);
-        const techsIntersection = intersection(oldProduct?.techs ?? [], product.techs);
+        const commentsIntersection = intersection(
+          oldProduct?.comments ?? [],
+          product.comments
+        );
+        const techsIntersection = intersection(
+          oldProduct?.techs ?? [],
+          product.techs
+        );
         if (
           oldProduct === undefined ||
-          (oldProduct.name === product.id
-            && commentsIntersection.length === oldProduct.comments.length
-            && commentsIntersection.length === product.comments.length
-            && techsIntersection.length === oldProduct.techs.length
-            && techsIntersection.length === product.techs.length
-          )
+          (oldProduct.name === product.id &&
+            commentsIntersection.length === oldProduct.comments.length &&
+            commentsIntersection.length === product.comments.length &&
+            techsIntersection.length === oldProduct.techs.length &&
+            techsIntersection.length === product.techs.length)
         ) {
           continue;
         }

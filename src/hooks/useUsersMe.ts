@@ -1,10 +1,10 @@
 import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
 import { IUsersMePutBody } from "@/@types/user/IUsersMePutBody";
-import { IUsersMeTechPostBody } from '@/@types/user/techs/IUsersMeTechPostBody';
-import { IUsersMeTechPutBody } from '@/@types/user/techs/IUsersMeTechPutBody';
+import { IUsersMeTechPostBody } from "@/@types/user/techs/IUsersMeTechPostBody";
+import { IUsersMeTechPutBody } from "@/@types/user/techs/IUsersMeTechPutBody";
 import { requests } from "@/utils/requests";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { escape } from 'querystring';
+import { escape } from "querystring";
 
 type TUseUsersMe = () => {
   data: IUsersMeGetResponse | undefined;
@@ -23,20 +23,20 @@ export const useUsersMe: TUseUsersMe = () => {
     });
   const postUsersMeTech = (data: IUsersMeTechPostBody) =>
     requests<unknown>(`${url}/techs`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(data),
     });
   const putUsersMeTech = (name: string, data: IUsersMeTechPutBody) =>
     requests<unknown>(`${url}/techs/${escape(name)}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
     });
   const deleteUsersMeTech = (name: string) =>
     requests<unknown>(`${url}/techs/${escape(name)}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
-  const {data, isLoading, refetch} = useQuery<IUsersMeGetResponse>({
+  const { data, isLoading, refetch } = useQuery<IUsersMeGetResponse>({
     queryKey: ["users", "me"],
     queryFn: getUsersMe,
   });
@@ -61,7 +61,10 @@ export const useUsersMe: TUseUsersMe = () => {
         const oldTech = oldTechsMap.get(newTech.tech.name);
 
         if (oldTech === undefined) {
-          await postUsersMeTech({ name: newTech.tech.name, level: newTech.level });
+          await postUsersMeTech({
+            name: newTech.tech.name,
+            level: newTech.level,
+          });
           continue;
         }
 

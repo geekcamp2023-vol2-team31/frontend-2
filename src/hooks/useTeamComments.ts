@@ -80,15 +80,15 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
           (comment) => [comment.id, comment]
         )
       );
-      const newCommentsWithNext = newComments.map<ITeamCommentsGetResponse["comments"][number]>(
-        (comment, idx) => {
-          const next = newComments[idx]?.id;
-          if (next === undefined) {
-            return { ...comment, next: undefined };
-          }
-          return { ...comment, next };
+      const newCommentsWithNext = newComments.map<
+        ITeamCommentsGetResponse["comments"][number]
+      >((comment, idx) => {
+        const next = newComments[idx]?.id;
+        if (next === undefined) {
+          return { ...comment, next: undefined };
         }
-      );
+        return { ...comment, next };
+      });
 
       for (const comment of newCommentsWithNext) {
         const oldComment = oldCommentsWithNextMap.get(comment.id);
@@ -96,11 +96,9 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
         // 変更のない項目はそのままにする。
         if (
           oldComment === undefined ||
-          (
-            oldComment.next === comment.next
-            && oldComment.body === comment.body
-            && oldComment.type === comment.type
-          )
+          (oldComment.next === comment.next &&
+            oldComment.body === comment.body &&
+            oldComment.type === comment.type)
         ) {
           continue;
         }
