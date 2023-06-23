@@ -12,13 +12,19 @@ export interface ITechListItem {
   leftSlot: ReactNode;
   users: ITechListUser[];
   actionType?: "plus" | "minus"; // undefinedの場合、アクションボタンを非表示
-  onActionClick: (event: { id: string; actionType: "plus" | "minus" }) => void;
+  onActionClick?: (event: { id: string; actionType: "plus" | "minus" }) => void;
 }
 
 interface ITechListUser {
-  id: string;
-  name: string;
-  level: "beginner" | "advanced" | "expert";
+  userName: string;
+  userToTech: {
+    tech: {
+      icon?: string | undefined;
+      color?: string | undefined;
+      name: string;
+    };
+    level: "beginner" | "advanced" | "expert";
+  };
 }
 
 const TechListItem = ({
@@ -31,7 +37,7 @@ const TechListItem = ({
 }: ITechListItem) => {
   const [isOpen, setIsOpen] = useState(false);
   const usersOfLevel = (users: ITechListUser[], level: string) => {
-    return users.filter((user) => user.level === level);
+    return users.filter((user) => user.userToTech.level === level);
   };
   const beginnerUsers = useMemo(() => usersOfLevel(users, "beginner"), [users]);
   const advancedUsers = useMemo(() => usersOfLevel(users, "advanced"), [users]);
@@ -43,7 +49,7 @@ const TechListItem = ({
 
   const handleActionClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    if (actionType) {
+    if (actionType && onActionClick) {
       onActionClick({ id, actionType });
     }
   };
@@ -74,7 +80,7 @@ const TechListItem = ({
             ))}
         </button>
       </div>
-      {isOpen && (
+      {isOpen && users && (
         <div className={classes.detail}>
           <div className={classes.tech}>
             <FlagIcon className={classes.icon} />
@@ -82,7 +88,9 @@ const TechListItem = ({
               {beginnerUsers.length === 0 ? (
                 <div>(なし)</div>
               ) : (
-                beginnerUsers.map((user) => <li key={user.id}>{user.name}</li>)
+                beginnerUsers.map((user) => (
+                  <li key={user.userName}>{user.userName}</li>
+                ))
               )}
             </ul>
           </div>
@@ -92,7 +100,9 @@ const TechListItem = ({
               {advancedUsers.length === 0 ? (
                 <div>(なし)</div>
               ) : (
-                advancedUsers.map((user) => <li key={user.id}>{user.name}</li>)
+                advancedUsers.map((user) => (
+                  <li key={user.userName}>{user.userName}</li>
+                ))
               )}
             </ul>
           </div>
@@ -102,7 +112,9 @@ const TechListItem = ({
               {expertUsers.length === 0 ? (
                 <div>(なし)</div>
               ) : (
-                expertUsers.map((user) => <li key={user.id}>{user.name}</li>)
+                expertUsers.map((user) => (
+                  <li key={user.userName}>{user.userName}</li>
+                ))
               )}
             </ul>
           </div>
