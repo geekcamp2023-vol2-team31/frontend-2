@@ -5,6 +5,7 @@ import { useUsersMe } from "@/hooks/useUsersMe";
 import { requests } from "@/utils/requests";
 import { useRouter } from "next/router";
 import style from "./home.module.scss";
+import { useMemo } from "react";
 
 const Home = () => {
   const router = useRouter();
@@ -49,16 +50,21 @@ const Home = () => {
     });
   };
 
+  const belongs = useMemo(() => {
+    return data?.user.teamsBelongs.map((team) => {
+      return { id: team.id, name: team.name };
+    });
+  }, [data?.user.teamsBelongs]);
+
   if (isLoading) {
     return null;
   }
-  const belongs = data?.user.teamsBelongs || [];
   return (
     <div>
       <Header title="ようこそ!" />
       <div className={style.container}>
         <TeamSelector
-          belongs={belongs}
+          belongs={belongs ?? []}
           onClickTeam={handleClickTeam}
           onJoinTeam={handleJoinTeam}
           onEnterNewTeam={handleEnterNewTeam}
