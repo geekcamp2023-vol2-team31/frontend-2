@@ -5,7 +5,7 @@ import styles from "@/components/teams/IdeaPage.module.css";
 import GetLinkData from "./GetLinkData";
 import GetCommentData from "./GetCommentData";
 import { IInterelementLink } from "./InterelementLink";
-// import { IIdeaListItemClickConnectorEvent } from "./IdeaListItem";
+import { IIdeaListItemClickConnectorEvent } from "./IdeaListItem";
 interface IIdeaPageProps {
   teamId: string;
 }
@@ -17,13 +17,13 @@ export interface IComment {
 interface IItems {
   id: string;
   value: string;
-  // onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
+  onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
 }
 interface Ilists {
   items: {
     id: string;
     value: string;
-    // onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
+    onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
   }[];
 }
 interface linkElement {
@@ -51,11 +51,11 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
       const Comments: IItems[][] = [[], [], []];
       commentData.map((comment) => {
         if (comment.type === "problem")
-          Comments[0].push({ id: comment.id, value: comment.value });
+          Comments[0].push({ id: comment.id, value: comment.value, onClickConnector: handleClickConnector });
         if (comment.type === "goal")
-          Comments[1].push({ id: comment.id, value: comment.value });
+          Comments[1].push({ id: comment.id, value: comment.value, onClickConnector: handleClickConnector});
         if (comment.type === "solution")
-          Comments[2].push({ id: comment.id, value: comment.value });
+          Comments[2].push({ id: comment.id, value: comment.value, onClickConnector: handleClickConnector });
       });
       setLists([
         { items: Comments[0] },
@@ -63,10 +63,14 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
         { items: Comments[2] },
       ]);
     });
-    void GetLinkData(teamId).then((LinkData: ILink[]) => {
-      setLinks(LinkData);
-    });
+    // const LinkData: ILink[] = await GetLinkData(teamId);
+    GetLinkData(teamId).then((fetchedLinks) => {
+    setLinks(fetchedLinks);
+  })
   }, []);
+  useEffect(() => {
+    console.log("useEffect ",links)
+  },[links])
 
   //ｙ座標取得
   const [item1Heights, setItem1Heights] = useState<
@@ -82,7 +86,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     id,
     items,
   }: IIdeaListChangeItemsHeightEvent) => {
-    console.log(items);
     if (id === "1") {
       setItem1Heights(items);
     } else if (id === "2") {
@@ -113,28 +116,30 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
   useEffect(getColumnPositions, [item1Heights, item1Heights, item1Heights]);
 
   //カーソルの座標取得
-  //  const [cursolPosition, setCursolPosition] = useState<number[]>();
-  // useEffect(() => {
-  //   const handleMouseMove = (e: MouseEvent) => {
-  //     setCursolPosition([e.pageX, e.pageY]);
-  //   };
-  //   document.body.addEventListener("mousemove", handleMouseMove);
-  //   return () => {
-  //     document.body.removeEventListener("mousemove", handleMouseMove);
-  //   };
-  // }, []);
+   const [cursolPosition, setCursolPosition] = useState<number[]>();
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursolPosition([e.pageX, e.pageY]);
+    };
+    document.body.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      document.body.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
 
   const getLinkPosition = (link: ILink) => {
+
     let x0 = 0;
     let y0 = 0;
     let x1 = 200;
     let y1 = 0;
-    // if (link.left.id === "-1") {
-    // if (cursolPosition) {
-    //   x0 = cursolPosition[0];
-    //   y0 = cursolPosition[1];
-    // }
-    // } else {
+    if (link.left.id === "-1") {
+    if (cursolPosition) {
+      x0 = cursolPosition[0];
+      y0 = cursolPosition[1];
+    }
+    } else {
     if (link.left.type === "problem") {
       if (column1Position) x0 = column1Position.right;
       const item = item1Heights.find((item) => item.id === link.left.id);
@@ -150,13 +155,13 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
       const item = item3Heights.find((item) => item.id === link.left.id);
       if (item) y0 = item.offsetY + item.height / 2 + margin;
     }
-    // }
-    // if (link.right.id === "-1") {
-    //   if (cursolPosition) {
-    //     x1 = cursolPosition[0];
-    //     y1 = cursolPosition[1];
-    //   }
-    // } else {
+    }
+    if (link.right.id === "-1") {
+      if (cursolPosition) {
+        x1 = cursolPosition[0];
+        y1 = cursolPosition[1];
+      }
+    } else {
     if (link.right.type === "problem") {
       if (typeof column1Position?.right === "number") x1 = column1Position.left;
       const item = item1Heights.find((item) => item.id === link.right.id);
@@ -172,73 +177,81 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
       const item = item3Heights.find((item) => item.id === link.right.id);
       if (item) y1 = item.offsetY + item.height / 2 + margin;
     }
-    // }
+    }
     return { id: link.id, x0, y0, x1, y1 };
   };
   const [linkPositions, setLinkPositions] = useState<IInterelementLink[]>([]);
   useEffect(() => {
-    setLinkPositions(links.map(getLinkPosition));
+    setLinkPositions(links.map((link)=>getLinkPosition(link)));
   }, [column1Position, column2Position, column3Position]);
 
-  // const [connectorToggle, setConnectorToggle] = useState<
-  //   "left" | "right" | null
-  // >(null);
-  // const handleClickConnector = ({
-  //   id,
-  //   type,
-  //   target,
-  // }: IIdeaListItemClickConnectorEvent) => {}
-  //   if (
-  //     (target === "left" && type === "problem") ||
-  //     (target === "right" && type === "solution")
-  //   ) {
-  //     if (connectorToggle) links.pop();
-  //     setConnectorToggle(null);
-  //     return;
-  //   }
-  //   //片方をクリック中
-  //   //左が固定の時
-  //   if (connectorToggle === "left") {
-  //     if (type === links[links.length - 1].right.type) {
-  //       links[links.length - 1].right.id = id;
-  //       setConnectorToggle(null);
-  //     } else {
-  //       links.pop();
-  //       setConnectorToggle(null);
-  //     }
-  //   } //右が固定の時
-  //   else if (connectorToggle === "right") {
-  //     if (type === links[links.length - 1].left.type) {
-  //       links[links.length - 1].left.id = id;
-  //       setConnectorToggle(null);
-  //     } else {
-  //       links.pop();
-  //       setConnectorToggle(null);
-  //     }
-  //   }
-  //   //何もクリックしていないとき
-  //   else {
-  //     let left: linkElement = { type: "wait", id: "0", value: "" };
-  //     let right: linkElement = { type: "wait", id: "0", value: "" };
-  //     if (target === "left") {
-  //       setConnectorToggle("right");
-  //       right = { type: type, id: id, value: "" };
-  //       if (type === "goal") left = { type: "problem", id: "-1", value: "" };
-  //       else left = { type: "goal", id: "-1", value: "" };
-  //     } else if (target === "right") {
-  //       setConnectorToggle("left");
-  //       left = { type: type, id: id, value: "" };
-  //       if (type === "goal") right = { type: "solution", id: "-1", value: "" };
-  //       else right = { type: "goal", id: "-1", value: "" };
-  //     }
-  //     const newLink: ILink = {
-  //       id: String(Number(links[links.length - 1].id) + 1),
-  //       left: left,
-  //       right: right,
-  //     };
-  //     links.push(newLink);
-  //   }
-  // }
+
+  // const links:ILink[] = []
+  const [connectorToggle, setConnectorToggle] = useState<
+    "left" | "right" | null
+  >(null);
+  const handleClickConnector = ({
+    id,
+    type,
+    target,
+  }: IIdeaListItemClickConnectorEvent) => {
+    console.log(links)
+    console.log(connectorToggle)
+    let copyLinks = [...links]
+    if (
+      (target === "left" && type === "problem") ||
+      (target === "right" && type === "solution")
+    ) {
+      if (connectorToggle) {
+        copyLinks.pop();
+        setLinks(copyLinks);
+      } 
+      setConnectorToggle(null);
+      return;
+    }
+    //片方をクリック中
+    //左が固定の時
+    if (connectorToggle === "left") {
+      if (type === copyLinks[links.length - 1].right.type) {
+        copyLinks[links.length - 1].right.id = id;
+        setConnectorToggle(null);
+      } else {
+        links.pop();
+        setConnectorToggle(null);
+      }
+    } //右が固定の時
+    else if (connectorToggle === "right") {
+      if (type === copyLinks[links.length - 1].left.type) {
+        copyLinks[links.length - 1].left.id = id;
+        setConnectorToggle(null);
+      } else {
+        links.pop();
+        setConnectorToggle(null);
+      }
+    }
+    //何もクリックしていないとき
+    else {
+      let left: linkElement = { type: "wait", id: "0", value: "" };
+      let right: linkElement = { type: "wait", id: "0", value: "" };
+      if (target === "left") {
+        setConnectorToggle("right");
+        right = { type: type, id: id, value: "" };
+        if (type === "goal") left = { type: "problem", id: "-1", value: "" };
+        else left = { type: "goal", id: "-1", value: "" };
+      } else if (target === "right") {
+        setConnectorToggle("left");
+        left = { type: type, id: id, value: "" };
+        if (type === "goal") right = { type: "solution", id: "-1", value: "" };
+        else right = { type: "goal", id: "-1", value: "" };
+      }
+      const newLink: ILink = {
+        id: links.length===0?"1":String(Number(copyLinks[links.length - 1].id) + 1),
+        left: left,
+        right: right,
+      };
+      setLinks([...copyLinks, newLink]);
+    }
+  }
 
   return (
     <div className={styles.Idea}>
@@ -246,7 +259,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
         <IdeaList
           id="1"
           label="困り事・背景"
-          // type="problem"
+          type="problem"
           leftStyle="circle"
           rightStyle="triangle"
           items={lists[0].items}
@@ -257,7 +270,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
         <IdeaList
           id="2"
           label="どうしたいか"
-          // type="goal"
+          type="goal"
           leftStyle="triangle"
           rightStyle="triangle"
           items={lists[1].items}
@@ -268,7 +281,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
         <IdeaList
           id="3"
           label="解決策"
-          // type="solution"
+          type="solution"
           leftStyle="triangle"
           rightStyle="circle"
           items={lists[2].items}
@@ -283,7 +296,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
           x1={link.x1}
           y1={link.y1}
           emphasized={true}
-          id={undefined} // connectorToggle={connectorToggle}
+          connectorToggle={connectorToggle}
         />
       ))}
     </div>
