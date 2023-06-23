@@ -1,5 +1,5 @@
-import { IAuthDeleteResponse } from "@/@types/auth/IAuthPostResponse";
-import { IAuthPostResponse } from "@/@types/auth/IAuthPostResponse copy";
+import { IAuthDeleteResponse } from "@/@types/auth/IAuthDeleteResponse";
+import { IAuthPostResponse } from "@/@types/auth/IAuthPostResponse";
 import { requests } from "@/utils/requests";
 import { useMutation } from "@tanstack/react-query";
 
