@@ -9,14 +9,14 @@ import { useRouter } from "next/router";
 export const LoginButton = () => {
   const { data: session } = useSession();
   const token = session?.user.accessToken as string;
-  const { setData, isError } = useAuth(token);
+  const { setData } = useAuth(token);
   const router = useRouter();
 
   useEffect(() => {
     if (session) {
       void router.push("/home");
     }
-  }, [session]);
+  }, [session, router]);
   const handleClick = async () => {
     try {
       await signIn("github").then(() => {
@@ -25,7 +25,6 @@ export const LoginButton = () => {
       });
     } catch (error) {
       toast.error("ログインに失敗しました。");
-    } finally {
     }
   };
 

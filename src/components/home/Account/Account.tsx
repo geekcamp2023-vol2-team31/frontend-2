@@ -12,10 +12,10 @@ export const Account = ({
   const { data } = useUsersMe();
   const router = useRouter();
   const onLogout = () => {
-    void (async()=>{
+    void (async () => {
       await signOut({ redirect: false });
       await router.push("/");
-    })()
+    })();
   };
 
   return (
