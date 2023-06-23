@@ -3,6 +3,7 @@ import classes from "./IdeaListItem.module.css";
 
 interface IIdeaListItemProps {
   id: string;
+  type: "problem" | "solution" | "goal";
   value: string;
   leftStyle: "circle" | "triangle";
   rightStyle: "circle" | "triangle";
@@ -21,6 +22,7 @@ export interface IIdeaListItemEnterEvent {
 
 export interface IIdeaListItemClickConnectorEvent {
   id: string;
+  type: "problem" | "solution" | "goal";
   target: "left" | "right";
 }
 
@@ -36,6 +38,7 @@ export interface IIdeaListItemChangeHeightEvent {
 
 const IdeaListItem: FC<IIdeaListItemProps> = ({
   id,
+  type,
   value,
   checkboxValue,
   leftStyle,
@@ -98,7 +101,7 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
       />
       <button
         onClick={() =>
-          onClickConnector && onClickConnector({ id, target: "left" })
+          onClickConnector && onClickConnector({ id, type, target: "left" })
         }
         className={`${classes.connector} ${classes["connector-left"]}`}
       >
@@ -116,7 +119,7 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
       </button>
       <button
         onClick={() =>
-          onClickConnector && onClickConnector({ id, target: "right" })
+          onClickConnector && onClickConnector({ id, type, target: "right" })
         }
         className={`${classes.connector} ${classes["connector-right"]}`}
       >

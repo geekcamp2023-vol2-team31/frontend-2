@@ -10,7 +10,7 @@ import { ReactSortable } from "react-sortablejs";
 interface IIdeaListProps {
   id: string;
   label: string;
-  // type: "problem" | "solution" | "goal"
+  type: "problem" | "solution" | "goal";
   leftStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのleftStyle
   rightStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのrightStyle
   items: {
@@ -60,7 +60,7 @@ const itemMargin = 8;
 const IdeaList: FC<IIdeaListProps> = ({
   id,
   label,
-  // type,
+  type,
   leftStyle,
   rightStyle,
   items,
@@ -82,7 +82,6 @@ const IdeaList: FC<IIdeaListProps> = ({
         offsetY: number;
       }[] = [];
       let offsetY = offsetYOfFirstItem;
-      console.log(itemHeights);
       itemHeights.forEach((item) => {
         resultItems.push({
           ...item,
@@ -131,7 +130,7 @@ const IdeaList: FC<IIdeaListProps> = ({
         {items.map((item) => (
           <IdeaListItem
             key={item.id}
-            // type={type}
+            type={type}
             {...item}
             leftStyle={leftStyle}
             rightStyle={rightStyle}
