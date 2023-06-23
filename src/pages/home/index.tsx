@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Account } from "@/components/home/Account/Account";
 import { Header } from "@/components/home/header/Header";
 import { TeamSelector } from "@/components/home/teamSelector/TeamSelector";
@@ -9,7 +10,6 @@ import style from "./home.module.scss";
 const Home = () => {
   const router = useRouter();
 
-  // TODO: useUsersMe を利用できた方が良い
   const { data, isLoading } = useUsersMe();
 
   const handleClickTeam = ({ team: { id } }: { team: { id: string } }) => {
@@ -49,10 +49,18 @@ const Home = () => {
     });
   };
 
+  const belongs = useMemo(() => {
+    if (!data?.user.teamsBelongs) {
+      return [];
+    }
+    return data?.user.teamsBelongs.map((team) => {
+      return { id: team.id, name: team.name };
+    });
+  }, [data?.user.teamsBelongs]);
+
   if (isLoading) {
     return null;
   }
-  const belongs = data?.user.teamsBelongs || [];
   return (
     <div>
       <Header title="ようこそ!" />

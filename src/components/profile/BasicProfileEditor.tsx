@@ -1,13 +1,12 @@
 import { useUsersMe } from "@/hooks/useUsersMe";
-import { FC, useState } from "react";
 import style from "./BasicProfileEditor.module.scss";
+import { FC, useState } from "react";
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const { data, setData } = useUsersMe();
 
-  // APIデータに合わせる
   const resetInput = () => {
     if (!data) return;
     setName(data.user.name);
