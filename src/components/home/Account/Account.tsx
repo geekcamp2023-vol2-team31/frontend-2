@@ -1,6 +1,8 @@
 import { useUsersMe } from "@/hooks/useUsersMe";
 import Link from "next/link";
 import style from "./Account.module.scss";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export const Account = ({
   onClickDeleteAccount,
@@ -8,6 +10,13 @@ export const Account = ({
   onClickDeleteAccount?: () => void;
 }) => {
   const { data } = useUsersMe();
+  const router = useRouter();
+  const onLogout = () => {
+    void (async () => {
+      await signOut({ redirect: false });
+      await router.push("/");
+    })();
+  };
 
   return (
     <div className={style.container}>
@@ -19,9 +28,9 @@ export const Account = ({
         <Link href="/profile" className={style.button}>
           プロフィールの編集
         </Link>
-        <Link href="/logout" className={style.button}>
+        <button className={style.button} onClick={onLogout}>
           ログアウト
-        </Link>
+        </button>
         <button
           className={style.button}
           onClick={() => onClickDeleteAccount && onClickDeleteAccount()}
