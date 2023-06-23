@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { Header } from "@/components/common/header/Header";
-import { BasicProfileEditor } from "@/components/profile/BasicProfileEditor";
-import { TechProfileEditor } from "@/components/profile/TechProfileEditor";
 import style from "./Profile.module.scss";
+import { BasicProfileEditor } from "@/components/Profile/BasicProfileEditor";
+import { TechProfileEditor } from "@/components/Profile/TechProfileEditor";
 
 const Profile = () => {
   const router = useRouter();
