@@ -192,8 +192,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     target,
   }: IIdeaListItemClickConnectorEvent) => {
     const copyLinks: ILink[] = links;
-    // copyToggle=connectorToggle
-    console.log(copyLinks);
 
     if (
       (target === "left" && type === "problem") ||
