@@ -58,7 +58,6 @@ const InterelementLink: FC<IInterelementLink> = ({
   };
 
   useEffect(redraw, [x0, y0, x1, y1, emphasized, connectorToggle]);
-
   return <div className={styles.link} ref={linkRef} style={linkStyle}></div>;
 };
 
