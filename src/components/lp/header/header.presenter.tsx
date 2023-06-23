@@ -1,7 +1,7 @@
 import Styles from "./header.module.scss";
 import { HeaderImage } from "@/assets/lp/header-image";
 import { Logo } from "@/assets/lp/logo";
-import { GithubLogo } from "@/assets/lp/github-logo";
+import { LoginButton } from "@/components/auth/LoginButton";
 
 const Header = () => {
   return (
@@ -18,10 +18,7 @@ const Header = () => {
             <br />
             すぐに始められます
           </p>
-          <button className={Styles.button}>
-            <GithubLogo className={Styles.github} />
-            GitHub でログイン
-          </button>
+          <LoginButton />
         </div>
       </div>
     </div>

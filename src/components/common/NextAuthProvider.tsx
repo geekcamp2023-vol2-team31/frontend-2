@@ -13,8 +13,10 @@ export const NextAuthProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!session) {
       void router.push("/");
+    } else {
+      void router.push("/home");
     }
   }, [router, session]);
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 };
