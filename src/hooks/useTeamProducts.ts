@@ -71,17 +71,18 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
         // 変更のない項目はそのままにする。
         // 共通集合をとって長さが違えば、配列が変更されているといえる。
         const oldProduct = data.products.find(
-          (olProduct) => product.id === olProduct.id
+          (oldProduct) => product.id === oldProduct.id
         );
+        const commentsIntersection = intersection(oldProduct?.comments ?? [], product.comments);
+        const techsIntersection = intersection(oldProduct?.techs ?? [], product.techs);
         if (
           oldProduct === undefined ||
-          (oldProduct.name === product.id &&
-            intersection(oldProduct.comments, product.comments).length ===
-              oldProduct.comments.length &&
-            intersection(
-              oldProduct.techs.map((tech) => tech.name),
-              product.techs.map((tech) => tech.name)
-            ).length === oldProduct.techs.length)
+          (oldProduct.name === product.id
+            && commentsIntersection.length === oldProduct.comments.length
+            && commentsIntersection.length === product.comments.length
+            && techsIntersection.length === oldProduct.techs.length
+            && techsIntersection.length === product.techs.length
+          )
         ) {
           continue;
         }
