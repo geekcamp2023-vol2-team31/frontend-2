@@ -1,52 +1,24 @@
-import { requests } from "@/utils/requests";
+import { useUsersMe } from "@/hooks/useUsersMe";
 import style from "./BasicProfileEditor.module.scss";
-import { FC, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
+import { FC, useState } from "react";
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const { data, setData } = useUsersMe();
 
-  const getUsersMe = () => {
-    return requests<IPutUsersMeBody>("/users/me");
-  };
-  const query = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: getUsersMe,
-  });
-
-  const putUsersMe = (body: { user: Partial<IPutUsersMeBody["user"]> }) => {
-    return requests("/users/me", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-  };
-  const mutation = useMutation(putUsersMe);
-  const onSubmit = () => {
-    mutation.mutate({
-      user: {
-        name: name,
-        bio: bio,
-      },
-    });
-  };
-
-  // APIデータに合わせる
   const resetInput = () => {
-    if (!query.data) return;
-    setName(query.data.user.name);
-    setBio(query.data.user.bio);
+    if (!data) return;
+    setName(data.user.name);
+    setBio(data.user.bio);
   };
 
-  useEffect(() => {
-    if (!query.data) return;
-    setName(query.data.user.name);
-    setBio(query.data.user.bio);
-  }, [query.data]);
+  const onSubmit = () => {
+    if (!data) return;
+    setData({
+      user: { ...data.user, name, bio },
+    });
+  };
 
   return (
     <div className={style.container}>
