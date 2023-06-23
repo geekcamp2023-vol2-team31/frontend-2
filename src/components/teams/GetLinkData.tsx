@@ -5,7 +5,7 @@ const GetLinks = async (teamId: string): Promise<ILink[]> => {
     method: "GET",
   });
   const data = (await response.json()) as unknown as { links: ILink[] };
-  return  await data.links;
+  return data.links;
 };
 
 export default GetLinks;
