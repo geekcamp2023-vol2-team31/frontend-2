@@ -1,17 +1,16 @@
-import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
 import { requests } from "../../../utils/requests";
 import style from "./Account.module.scss";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
 
 export const Account = ({
   onClickDeleteAccount,
 }: {
   onClickDeleteAccount?: () => void;
 }) => {
-  const getUsersMe = () => {
-    return requests("/users/me") as unknown as IPutUsersMeBody;
-  };
+  const getUsersMe = () => requests<IUsersMeGetResponse>("/users/me");
+
   const query = useQuery({
     queryKey: ["users", "me"],
     queryFn: getUsersMe,
