@@ -1,50 +1,12 @@
 import { useUsersMe } from "@/hooks/useUsersMe";
 import { FC, useState } from "react";
 import style from "./BasicProfileEditor.module.scss";
-<<<<<<< HEAD
-=======
-import { FC, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
-import { IUsersMePutBody } from "@/@types/user/IUsersMePutBody";
->>>>>>> bf8df2e (reafactor: basic-profile-editor query)
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-<<<<<<< HEAD
   const { data, setData } = useUsersMe();
-=======
 
-  const getUsersMe = () => {
-    return requests<IUsersMeGetResponse>("/users/me");
-  };
-  const query = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: getUsersMe,
-  });
-
-  const putUsersMe = (body: { user: Partial<IUsersMePutBody["user"]> }) => {
-    return requests<IUsersMePutBody>("/users/me", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-  };
-  const mutation = useMutation(putUsersMe);
-  const onSubmit = () => {
-    mutation.mutate({
-      user: {
-        name: name,
-        bio: bio,
-      },
-    });
-  };
->>>>>>> bf8df2e (reafactor: basic-profile-editor query)
-
-  // APIデータに合わせる
   const resetInput = () => {
     if (!data) return;
     setName(data.user.name);

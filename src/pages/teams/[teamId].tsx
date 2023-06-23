@@ -187,6 +187,7 @@ const IdeaPage = ({
     <div style={{ display: "flex", gap: "12px" }}>
       <IdeaList
         id="problem"
+        type="problem"
         label="困り事・背景"
         leftStyle="circle"
         rightStyle="triangle"
@@ -195,6 +196,7 @@ const IdeaPage = ({
       />
       <IdeaList
         id="goal"
+        type="goal"
         label="どうしたいか"
         leftStyle="triangle"
         rightStyle="triangle"
@@ -203,6 +205,7 @@ const IdeaPage = ({
       />
       <IdeaList
         id="solution"
+        type="solution"
         label="解決策"
         leftStyle="triangle"
         rightStyle="circle"
