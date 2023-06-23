@@ -1,22 +1,25 @@
 import React from "react";
 import style from "./LoginButton.module.css";
 import { signIn, useSession } from "next-auth/react";
-import { requests } from "@/utils/requests";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
 
 export const LoginButton = () => {
   const { data: session } = useSession();
-  const notify = () => toast.error("ログインに失敗しました。");
   const token = session?.user.accessToken as string;
+  const { setData, isError } = useAuth(token);
+  const router = useRouter();
   const handleClick = async () => {
     try {
-      await signIn("github");
-      await requests("/auth", {
-        body: JSON.stringify(token),
+      await signIn("github").then(() => {
+        setData(token);
       });
     } catch (error) {
-      notify();
+      toast.error("ログインに失敗しました。");
+    } finally {
+      if (!isError) void router.push("/home");
     }
   };
 

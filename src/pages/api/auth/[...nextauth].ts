@@ -13,7 +13,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt({ token, account, user }) {
-      console.log("agaga", account?.access_token);
       if (account && user) {
         return {
           ...token,
@@ -23,10 +22,8 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session({ session, token }) {
-      return {
-        ...session,
-        accessToken: token.accessToken,
-      };
+      session.user.accessToken = token.accessToken;
+      return session;
     },
   },
 };
