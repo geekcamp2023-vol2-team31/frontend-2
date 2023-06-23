@@ -1,21 +1,16 @@
+import { useMemo } from "react";
+import { Account } from "@/components/home/Account/Account";
 import { Header } from "@/components/home/header/Header";
 import { TeamSelector } from "@/components/home/teamSelector/TeamSelector";
-import { Account } from "@/components/home/Account/Account";
+import { useUsersMe } from "@/hooks/useUsersMe";
 import { requests } from "@/utils/requests";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import style from "./home.module.scss";
-import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
-import { useMemo } from "react";
 
 const Home = () => {
   const router = useRouter();
 
-  // TODO: useUsersMe を利用できた方が良い
-  const { data, isLoading } = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: () => requests<IUsersMeGetResponse>("/users/me"),
-  });
+  const { data, isLoading } = useUsersMe();
 
   const handleClickTeam = ({ team: { id } }: { team: { id: string } }) => {
     void router.push(`/teams/${id}`);
@@ -55,6 +50,9 @@ const Home = () => {
   };
 
   const belongs = useMemo(() => {
+    if (!data?.user.teamsBelongs) {
+      return [];
+    }
     return data?.user.teamsBelongs.map((team) => {
       return { id: team.id, name: team.name };
     });
@@ -63,13 +61,12 @@ const Home = () => {
   if (isLoading) {
     return null;
   }
-
   return (
     <div>
       <Header title="ようこそ!" />
       <div className={style.container}>
         <TeamSelector
-          belongs={belongs ?? []}
+          belongs={belongs}
           onClickTeam={handleClickTeam}
           onJoinTeam={handleJoinTeam}
           onEnterNewTeam={handleEnterNewTeam}

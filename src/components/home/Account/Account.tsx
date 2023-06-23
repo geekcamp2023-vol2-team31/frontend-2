@@ -1,26 +1,19 @@
-import { requests } from "../../../utils/requests";
-import style from "./Account.module.scss";
-import { useQuery } from "@tanstack/react-query";
+import { useUsersMe } from "@/hooks/useUsersMe";
 import Link from "next/link";
-import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
+import style from "./Account.module.scss";
 
 export const Account = ({
   onClickDeleteAccount,
 }: {
   onClickDeleteAccount?: () => void;
 }) => {
-  const getUsersMe = () => requests<IUsersMeGetResponse>("/users/me");
-
-  const query = useQuery({
-    queryKey: ["users", "me"],
-    queryFn: getUsersMe,
-  });
+  const { data } = useUsersMe();
 
   return (
     <div className={style.container}>
       <h1 className={style.title}>プロフィールとアカウント</h1>
       <p>
-        <strong>{query.data?.user.name}</strong>としてログイン中
+        <strong>{data?.user.name}</strong>としてログイン中
       </p>
       <div className={style.buttonContainer}>
         <Link href="/profile" className={style.button}>
