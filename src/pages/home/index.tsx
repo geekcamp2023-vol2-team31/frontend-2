@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Account } from "@/components/home/Account/Account";
 import { Header } from "@/components/home/header/Header";
 import { TeamSelector } from "@/components/home/teamSelector/TeamSelector";
@@ -49,18 +48,13 @@ const Home = () => {
     });
   };
 
-  const belongs = useMemo(() => {
-    if (!data?.user.teamsBelongs) {
-      return [];
-    }
-    return data?.user.teamsBelongs.map((team) => {
-      return { id: team.id, name: team.name };
-    });
-  }, [data?.user.teamsBelongs]);
-
-  if (isLoading) {
+  if (isLoading || !data?.user) {
     return null;
   }
+  const belongs =
+    data?.user.teamsBelongs.map((team) => {
+      return { id: team.id, name: team.name };
+    }) || [];
   return (
     <div>
       <Header title="ようこそ!" />
