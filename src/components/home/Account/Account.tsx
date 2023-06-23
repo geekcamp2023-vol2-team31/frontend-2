@@ -1,7 +1,7 @@
 import { useUsersMe } from "@/hooks/useUsersMe";
 import Link from "next/link";
 import style from "./Account.module.scss";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export const Account = ({
@@ -11,9 +11,11 @@ export const Account = ({
 }) => {
   const { data } = useUsersMe();
   const router = useRouter();
-  const onLogout = async () => {
-    await signOut({ redirect: false });
-    await router.push("/");
+  const onLogout = () => {
+    void (async()=>{
+      await signOut({ redirect: false });
+      await router.push("/");
+    })()
   };
 
   return (
