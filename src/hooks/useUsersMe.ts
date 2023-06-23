@@ -19,6 +19,9 @@ export const useUsersMe: TUseUsersMe = () => {
   const putUsersMe = (data: IUsersMePutBody) =>
     requests<IUsersMeGetResponse>(url, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
   const postUsersMeTech = (data: IUsersMeTechPostBody) =>

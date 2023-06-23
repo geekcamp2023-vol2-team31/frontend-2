@@ -1,6 +1,6 @@
 import { useUsersMe } from "@/hooks/useUsersMe";
 import style from "./BasicProfileEditor.module.scss";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
@@ -12,6 +12,13 @@ export const BasicProfileEditor: FC = () => {
     setName(data.user.name);
     setBio(data.user.bio);
   };
+
+  useEffect(() => {
+    if (data?.user.name && data.user.bio) {
+      setName(data?.user.name);
+      setBio(data?.user.bio);
+    }
+  }, [data]);
 
   const onSubmit = () => {
     if (!data) return;
