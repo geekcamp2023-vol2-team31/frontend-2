@@ -140,7 +140,11 @@ const IdeaList: FC<IIdeaListProps> = ({
           return item;
         }
       });
-      return nextItemHeights;
+      if (!nextItemHeights.some((item) => item.id === id)) {
+        return [...nextItemHeights, { id, height }];
+      } else {
+        return nextItemHeights;
+      }
     });
   };
 
