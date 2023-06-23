@@ -85,8 +85,8 @@ let products = [
 ];
 
 let links = [
-  { id: "1", left: comments[0], right: comments[2] },
-  { id: "2", left: comments[2], right: comments[3] },
+  { id: "1", leftCommentId: comments[0].id, rightCommentId: comments[2].id },
+  { id: "2", leftCommentId: comments[2].id, rightCommentId: comments[3].id },
 ];
 // ↑ ダミーデータの宣言 ↑
 

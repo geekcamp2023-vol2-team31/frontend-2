@@ -109,8 +109,8 @@ Content-Type: application/json
 
 {
   "link": {
-    "left": { "id": "3", "value": "コメント3", "type": "goal" },
-    "right": { "id": "5", "value": "コメント5", "type": "solution" }
+    "leftCommentId": "3",
+    "rightCommentId": "5"
   }
 }
 
