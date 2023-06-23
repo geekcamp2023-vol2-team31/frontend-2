@@ -32,8 +32,8 @@ Content-Type: application/json
 
 {
   "comment": {
-    "content": "アイディア",
-    "columnId": "3"
+    "value": "アイディア",
+    "type": "solution"
   }
 }
 

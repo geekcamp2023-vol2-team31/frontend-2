@@ -251,10 +251,11 @@ app.get("/teams/:teamId/comments", (req, res) => {
  */
 app.post("/teams/:teamId/comments", (req, res) => {
   const {
-    comment: { content, columnId },
+    comment: { value, type },
   } = req.body;
-  comments.push({ id: uniqueId, content, columnId });
-  res.send({ success: true });
+  const newComment = { id: uniqueId(), value, type };
+  comments.push(newComment);
+  res.send(newComment);
 });
 
 // PUT /teams/:teamId/comments/:commentId
@@ -308,8 +309,14 @@ app.post("/teams/:teamId/products", (req, res) => {
   const {
     product: { name, comments },
   } = req.body;
-  products.push({ id: uniqueId(), name, comments });
-  res.send({ success: true });
+  const newProduct = {
+    id: uniqueId(),
+    name,
+    comments,
+    techs: [],
+  };
+  products.push(newProduct);
+  res.send(newProduct);
 });
 
 // PUT /teams/:teamId/products/:productId
