@@ -1,10 +1,11 @@
-import { MouseEvent, ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import classes from "./TechListItem.module.scss";
 import { PlusIcon } from "@/assets/plusIcon";
 import { FlagIcon } from "@/assets/flagIcon";
 import { SchoolIcon } from "@/assets/schoolIcon";
 import { DrawIcon } from "@/assets/drawIcon";
 import { MinusIcon } from "@/assets/minusIcon";
+import { Tech } from "../ProductContainer/ProductContainer";
 
 export interface ITechListItem {
   id: string;
@@ -12,23 +13,18 @@ export interface ITechListItem {
   leftSlot: ReactNode;
   users: ITechListUser[];
   actionType?: "plus" | "minus"; // undefinedの場合、アクションボタンを非表示
-  onActionClick?: (event: { id: string; actionType: "plus" | "minus" }) => void;
+  onActionClick?: (tech: Tech) => void;
 }
 
 interface ITechListUser {
   userName: string;
   userToTech: {
-    tech: {
-      icon?: string | undefined;
-      color?: string | undefined;
-      name: string;
-    };
+    tech: Tech;
     level: "beginner" | "advanced" | "expert";
   };
 }
 
 const TechListItem = ({
-  id,
   label,
   leftSlot,
   users,
@@ -45,13 +41,6 @@ const TechListItem = ({
 
   const handleClickHeader = () => {
     setIsOpen((isOpen) => !isOpen);
-  };
-
-  const handleActionClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    if (actionType && onActionClick) {
-      onActionClick({ id, actionType });
-    }
   };
 
   return (
@@ -71,7 +60,7 @@ const TechListItem = ({
           <SchoolIcon className={classes.icon} />
           {expertUsers.length}
         </div>
-        <button className={classes.action} onClick={handleActionClick}>
+        <button className={classes.action} onClick={() => onActionClick}>
           {actionType &&
             (actionType === "plus" ? (
               <PlusIcon className={classes.action} />
