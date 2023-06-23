@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { requests } from "@/utils/requests";
 import { useIsSidebarOpen } from "@/store/isSidebarOpen";
 import { ITeamGetResponse } from "@/@types/team/ITeamGetResponse";
+import MemberListItem from "../MemberListItem/MemberListItem";
 
 type Props = {
   teamId: string;
@@ -17,7 +18,7 @@ export const TeamSettingsContainer: FC<Props> = ({ teamId }) => {
   const getTeam: () => Promise<ITeamGetResponse> = () =>
     requests(`/teams/${teamId}`);
   const { data } = useQuery<ITeamGetResponse>(["teams"], getTeam);
-  const toggleOpen = useIsSidebarOpen((state) => state.toggleOpen);
+  const toggleOpen = useIsSidebarOpen((state) => state.toggleSidebar);
   const teamMember = useMemo(() => {
     return data && data.team.members
       ? [...data.team.members, data.team.owner]
@@ -86,14 +87,13 @@ export const TeamSettingsContainer: FC<Props> = ({ teamId }) => {
           })}
         </div>
       </div>
-      {/* <div className={style.techContainer}>
+      <div className={style.techContainer}>
         <p className={style.title}>メンバー</p>
         <div className={style.techWrapper}>
           {data?.team.members.map((member) => {
             return (
-              <TechListItem
+              <MemberListItem
                 key={member.id}
-                id={member.id}
                 label={member.name}
                 leftSlot={
                   <div
@@ -106,7 +106,7 @@ export const TeamSettingsContainer: FC<Props> = ({ teamId }) => {
             );
           })}
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

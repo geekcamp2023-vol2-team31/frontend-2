@@ -1,0 +1,14 @@
+.container {
+  padding: 4px;
+  color: #676461;
+
+  .header {
+    cursor: pointer;
+    display: flex;
+    font-size: 16px;
+
+    .label {
+      flex: 1;
+    }
+  }
+}
