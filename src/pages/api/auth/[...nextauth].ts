@@ -12,15 +12,18 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt({ token, account }) {
-      token.accessToken = account?.access_token;
+    jwt({ token, account, user }) {
+      if (account && user) {
+        return {
+          ...token,
+          accessToken: account?.access_token,
+        };
+      }
       return token;
     },
     session({ session, token }) {
-      return {
-        ...session,
-        accessToken: token.accessToken,
-      };
+      session.user.accessToken = token.accessToken;
+      return session;
     },
   },
 };
