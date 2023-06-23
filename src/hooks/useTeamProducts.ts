@@ -4,7 +4,6 @@ import { ITeamProductsPostBody } from "@/@types/team/products/ITeamProductsPostB
 import { ITeamProductsPostResponse } from "@/@types/team/products/ITeamProductsPostResponse";
 import { escape } from "@/utils/escape";
 import { intersection } from "@/utils/intersection";
-import { queryClient } from "@/utils/queryClient";
 import { requests } from "@/utils/requests";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -34,7 +33,7 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
     });
 
   // query: データ取得のサポート
-  const { data, isLoading } = useQuery<ITeamProductsGetResponse>({
+  const { data, isLoading, refetch } = useQuery<ITeamProductsGetResponse>({
     queryKey: ["teams", teamId, "products"],
     queryFn: getProducts,
   });
@@ -93,8 +92,8 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
 
       return newData;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["teams", teamId, "products"], data);
+    onSuccess: async () => {
+      await refetch();
     },
   });
 
