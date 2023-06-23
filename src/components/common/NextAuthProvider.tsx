@@ -11,10 +11,10 @@ export const NextAuthProvider: FC<Props> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!session) {
+    if (!session && router.pathname.match(/^\/(home|profile)\//)) {
       void router.push("/");
     }
   }, [router, session]);
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 };

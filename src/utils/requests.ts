@@ -8,7 +8,10 @@ const requests = async <T = unknown>(
   path: string, // リクエストのパス 例: "/users/me"
   init?: RequestInit | undefined
 ) => {
-  const req = await fetch(`${baseURL}${path}`, init);
+  const req = await fetch(`${baseURL}${path}`, {
+    credentials: "include",
+    ...(init ?? {}),
+  });
   return (await req.json()) as unknown as T;
 };
 
