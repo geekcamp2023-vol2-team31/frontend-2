@@ -178,7 +178,7 @@ const IdeaList: FC<IIdeaListProps> = ({
       <div style={{ marginTop: "8px" }}>
         <NewIdeaListItem
           id={id}
-          onEnter={handleAddItem}
+          onEnter={({ value }) => handleAddItem({ id: type, value })}
           leftStyle={leftStyle}
           rightStyle={rightStyle}
         />

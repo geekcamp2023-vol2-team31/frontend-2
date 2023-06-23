@@ -2,9 +2,7 @@ import { useRouter } from "next/router";
 import { Header } from "@/components/common/header/Header";
 import { useQuery } from "@tanstack/react-query";
 import { requests } from "@/utils/requests";
-import IdeaList from "@/components/teams/IdeaList";
-import { ProductFrame } from "@/components/teams/ProductFrame";
-import { Fragment, useState } from "react";
+import IdeaPage from "@/components/teams/IdeaPage";
 
 // TODO: バックエンドに合わせる
 // 動作確認のため最低限のキーしか書いていない
@@ -13,78 +11,13 @@ interface ITeam {
   name: string;
   invitationCode: string;
 }
-interface IComment {
-  id: string;
-  value: string;
-  type: "problem" | "goal" | "solution";
-}
-interface IProduct {
-  id: string;
-  name: string;
-  comments: IComment[];
-  techs: { name: string }[];
-}
 
 // TODO: kitokenさん実装のものとマージする
+/*
 const IdeaPage = ({
-  teamId,
-  onProductClick,
 }: {
-  teamId: string;
-  onProductClick: (event: { id: string }) => void;
 }) => {
-  const [isAddingProduct, setIsAddingProduct] = useState(false);
-  const [commentsSelected, setCommentsSelected] = useState<{ id: string }[]>(
-    []
-  );
-  const [solutionHeights, setSolutionHeights] = useState<
-    {
-      id: string;
-      height: number;
-      offsetY: number;
-    }[]
-  >([]);
-  const [bbox, setBbox] = useState<
-    | {
-        top: number;
-        bottom: number;
-        left: number;
-        right: number;
-      }
-    | undefined
-  >(undefined);
-  const {
-    data: comments,
-    isLoading: isLoadingComments,
-    refetch: refetchComments,
-  } = useQuery({
-    queryKey: ["teams", "teamId", "comments"],
-    queryFn: () =>
-      requests<{ comments: IComment[] }>(`/teams/${teamId}/comments`),
-  });
-  const {
-    data: productsData,
-    isLoading: isLoadingProducts,
-    refetch: refetchProducts,
-  } = useQuery({
-    queryKey: ["teams", "teamId", "products"],
-    queryFn: () =>
-      requests<{ products: IProduct[] }>(`/teams/${teamId}/products`),
-  });
-  if (isLoadingComments || isLoadingProducts) {
-    return null;
-  }
-  const onChangeCheckbox = ({ id, value }: { id: string; value: boolean }) => {
-    if (value) {
-      // 選択中のコメントに追加
-      setCommentsSelected((arr) => [...arr, { id }]);
-    } else {
-      // 選択中のコメントから排除
-      setCommentsSelected((arr) => arr.filter((c) => c.id !== id));
-    }
-  };
-  const problems = comments?.comments.filter((c) => c.type === "problem");
-  const goals = comments?.comments.filter((c) => c.type === "goal");
+
   const solutions = comments?.comments
     .filter((c) => c.type === "solution")
     .map((c) => {
@@ -237,6 +170,7 @@ const IdeaPage = ({
     </div>
   );
 };
+*/
 
 const Teams = () => {
   const router = useRouter();
@@ -259,7 +193,7 @@ const Teams = () => {
         onHomeButtonClick={() => void router.push("/home")}
       />
       <div>
-        <IdeaPage teamId={teamId} onProductClick={() => console.log("pc")} />
+        <IdeaPage teamId={teamId} onProductClick={(e) => console.log(e)} />
       </div>
     </div>
   );

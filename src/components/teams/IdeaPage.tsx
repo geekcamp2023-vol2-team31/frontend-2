@@ -1,33 +1,33 @@
-import React, { FC, useState, useRef, useEffect } from "react";
+import React, {
+  FC,
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  Fragment,
+} from "react";
 import IdeaList, { IIdeaListChangeItemsHeightEvent } from "./IdeaList";
 import InterelementLink from "./InterelementLink";
 import styles from "@/components/teams/IdeaPage.module.css";
-import GetLinkData from "./GetLinkData";
-import GetCommentData from "./GetCommentData";
 import { IIdeaListItemClickConnectorEvent } from "./IdeaListItem";
+import { useQuery } from "@tanstack/react-query";
+import { requests } from "@/utils/requests";
+import { useTeamLinks } from "@/hooks/useTeamLinks";
+import { ProductFrame } from "./ProductFrame";
+
 interface IIdeaPageProps {
   teamId: string;
+  onProductClick: (event: { id: string }) => void;
 }
+type CommentType = "problem" | "solution" | "goal";
 export interface IComment {
   id: string;
-  type: "problem" | "solution" | "goal";
+  type: CommentType;
   value: string;
-}
-interface IItems {
-  id: string;
-  value: string;
-  onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
-}
-interface ILists {
-  items: {
-    id: string;
-    value: string;
-    onClickConnector?: (event: IIdeaListItemClickConnectorEvent) => void;
-  }[];
 }
 interface ILinkElement {
   id: string;
-  type: "problem" | "solution" | "goal" | "wait";
+  type: "problem" | "solution" | "goal";
   value: string;
 }
 export interface ILink {
@@ -35,40 +35,217 @@ export interface ILink {
   left: ILinkElement;
   right: ILinkElement;
 }
+export interface ICommentPosition {
+  id: string;
+  height: number;
+  offsetY: number;
+}
+export interface IBoundingBox {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+interface IProduct {
+  id: string;
+  name: string;
+  comments: IComment[];
+  techs: { name: string }[];
+}
 
-const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
+const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
+  // TODO: エレメントに合わせる
   const margin = 50;
   const localLinks: ILink[] = [];
-  //データ取得
-  const [lists, setLists] = useState<ILists[]>([
-    { items: [] },
-    { items: [] },
-    { items: [] },
-  ]);
-  const [links, setLinks] = useState<ILink[]>([]);
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [commentsSelected, setCommentsSelected] = useState<{ id: string }[]>(
+    []
+  );
+  const [temporaryLink, setTemporaryLink] = useState<
+    Partial<ILink> | undefined
+  >(undefined);
   const [cursolPosition, setCursolPosition] = useState<number[]>();
-  useEffect(() => {
-    void GetCommentData(teamId).then((commentData: IComment[]) => {
-      const Comments: IItems[][] = [[], [], []];
-      commentData.map((comment) => {
-        if (comment.type === "problem")
-          Comments[0].push({ id: comment.id, value: comment.value });
-        if (comment.type === "goal")
-          Comments[1].push({ id: comment.id, value: comment.value });
-        if (comment.type === "solution")
-          Comments[2].push({ id: comment.id, value: comment.value });
-      });
-      setLists([
-        { items: Comments[0] },
-        { items: Comments[1] },
-        { items: Comments[2] },
-      ]);
+
+  //x座標取得用
+  const column1 = useRef<HTMLDivElement>(null);
+  const column2 = useRef<HTMLDivElement>(null);
+  const column3 = useRef<HTMLDivElement>(null);
+  const [column1Position, setColumn1Position] = useState<DOMRect | null>(null);
+  const [column2Position, setColumn2Position] = useState<DOMRect | null>(null);
+  const [column3Position, setColumn3Position] = useState<DOMRect | null>(null);
+
+  //ｙ座標取得用
+  const [item1Heights, setItem1Heights] = useState<ICommentPosition[]>([]);
+  const [item2Heights, setItem2Heights] = useState<ICommentPosition[]>([]);
+  // solutionの各commentの位置情報
+  const [item3Heights, setItem3Heights] = useState<ICommentPosition[]>([]);
+  // ソリューションのIdeaListの境界座標(上下左右)
+  const [bbox, setBbox] = useState<IBoundingBox | undefined>(undefined);
+  // connectorの情報管理
+  const [connectorToggle] = useState<"left" | "right" | null>(null);
+
+  // link一覧の取得
+  const {
+    data: linksData,
+    isLoading: isLoadingLinks,
+    setData: setLinksData,
+  } = useTeamLinks(teamId);
+
+  // コメント一覧の取得
+  const {
+    data: comments,
+    isLoading: isLoadingComments,
+    refetch: refetchComments,
+  } = useQuery({
+    queryKey: ["teams", "teamId", "comments"],
+    queryFn: () =>
+      requests<{ comments: IComment[] }>(`/teams/${teamId}/comments`),
+  });
+  const addLink = (link: Partial<ILink>) => {
+    if (!linksData) {
+      throw new Error("linksデータが取得できていません");
+    }
+    if (!link.left || !link.left.id || !link.right || !link.right.id) {
+      throw new Error(
+        "新しく作るLinkのうち左右のどちらかのIDが指定されていません"
+      );
+    }
+    setLinksData({
+      links: [
+        ...linksData.links,
+        {
+          id: link.id || "-1", // TODO: UUIDが望ましい
+          leftCommentId: link.left.id,
+          rightCommentId: link.right.id,
+        },
+      ],
     });
-    const fetchData = async () => {
-      const data = await GetLinkData(teamId);
-      if (data) setLinks(data);
-    };
-    void fetchData();
+  };
+  const handleClickConnector = ({
+    id,
+    type,
+    target,
+  }: IIdeaListItemClickConnectorEvent) => {
+    // この関数をmapで渡しているためか、関数内でtemporaryLinkを参照すると
+    // うまく反映されていない値が出てくる。
+    // そこで手続き全体をsetTemporaryLinkで囲っている
+    setTemporaryLink((temporaryLink) => {
+      if (
+        (target === "left" && type === "problem") ||
+        (target === "right" && type === "solution")
+      ) {
+        // if (copyToggle) copyLinks.pop();
+        // copyToggle = null;
+        if (temporaryLink) return undefined;
+      }
+      // 右端や左端の、対応するtypeがない時はundefinedを返す
+      const getCorrespondingType = (
+        type: CommentType,
+        decided: "left" | "right"
+      ): CommentType | undefined => {
+        if (type === "problem") {
+          return decided === "right" ? undefined : "goal";
+        } else if (type === "goal") {
+          return decided === "right" ? "problem" : "solution";
+        } /* type === "solution" */ else {
+          return decided === "right" ? "goal" : undefined;
+        }
+      };
+      //片方をクリック中
+      //左が固定の時
+      if (temporaryLink && temporaryLink.left) {
+        // 線を引けるような(対応する)コメントをクリックしたとき
+        if (
+          target === "left" &&
+          type === getCorrespondingType(temporaryLink.left.type, "left")
+        ) {
+          addLink({ ...temporaryLink, right: { id, type, value: "" } });
+          return undefined;
+        } else {
+          // 線を引くのをキャンセルする
+          return undefined;
+        }
+      }
+      //右が固定の時
+      else if (temporaryLink && temporaryLink.right) {
+        // 線を引けるような(対応する)コメントをクリックしたとき
+        if (
+          target === "right" &&
+          type === getCorrespondingType(temporaryLink.right.type, "right")
+        ) {
+          addLink({ ...temporaryLink, left: { id, type, value: "" } });
+          return undefined;
+        } else {
+          // 線を引くのをキャンセルする
+          return undefined;
+        }
+      }
+      //何もクリックしていないとき
+      else {
+        if (target === "left") {
+          return { id: "-1", right: { id, type, value: "" } };
+        } else if (target === "right") {
+          return { id: "-1", left: { id, type, value: "" } };
+        }
+      }
+    });
+  };
+
+  const onChangeCheckbox = ({ id, value }: { id: string; value: boolean }) => {
+    if (value) {
+      // 選択中のコメントに追加
+      setCommentsSelected((arr) => [...arr, { id }]);
+    } else {
+      // 選択中のコメントから排除
+      setCommentsSelected((arr) => arr.filter((c) => c.id !== id));
+    }
+  };
+
+  const lists = useMemo(() => {
+    if (!comments?.comments) {
+      return [{ items: [] }, { items: [] }, { items: [] }];
+    }
+    const filterByType =
+      (type: "problem" | "goal" | "solution") => (c: IComment) =>
+        c.type === type;
+    const addClickHander = (c: IComment) => ({
+      ...c,
+      onClickConnector: handleClickConnector,
+    });
+    return [
+      {
+        items: comments.comments
+          .filter(filterByType("problem"))
+          .map(addClickHander),
+      },
+      {
+        items: comments.comments
+          .filter(filterByType("goal"))
+          .map(addClickHander),
+      },
+      {
+        // 解決策についてはチェックボックスを付け得る
+        items: comments.comments
+          .filter(filterByType("solution"))
+          .map(addClickHander)
+          .map((comment) => {
+            if (isAddingProduct) {
+              return {
+                ...comment,
+                checkboxValue: commentsSelected.some(
+                  (c) => c.id === comment.id
+                ),
+                onChangeCheckbox,
+              };
+            } else {
+              return comment;
+            }
+          }),
+      },
+    ];
+  }, [comments, isAddingProduct, commentsSelected]);
+
+  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setCursolPosition([e.pageX, e.pageY]);
     };
@@ -78,20 +255,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     };
   }, []);
 
-  links.map((link) => {
-    localLinks.push(link);
-  });
-
-  //ｙ座標取得
-  const [item1Heights, setItem1Heights] = useState<
-    IIdeaListChangeItemsHeightEvent["items"]
-  >([]);
-  const [item2Heights, setItem2Heights] = useState<
-    IIdeaListChangeItemsHeightEvent["items"]
-  >([]);
-  const [item3Heights, setItem3Heights] = useState<
-    IIdeaListChangeItemsHeightEvent["items"]
-  >([]);
   const handleChangeItemsHeight = ({
     id,
     items,
@@ -105,13 +268,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     }
   };
 
-  //x座標取得
-  const column1 = useRef<HTMLDivElement>(null);
-  const column2 = useRef<HTMLDivElement>(null);
-  const column3 = useRef<HTMLDivElement>(null);
-  const [column1Position, setColumn1Position] = useState<DOMRect | null>(null);
-  const [column2Position, setColumn2Position] = useState<DOMRect | null>(null);
-  const [column3Position, setColumn3Position] = useState<DOMRect | null>(null);
   const getColumnPositions = () => {
     if (column1.current) {
       setColumn1Position(column1.current.getBoundingClientRect());
@@ -124,6 +280,89 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     }
   };
   useEffect(getColumnPositions, [item1Heights, item1Heights, item1Heights]);
+
+  const links =
+    isLoadingComments || isLoadingLinks || !linksData
+      ? []
+      : linksData.links.map((link) => {
+          const left = comments?.comments.find(
+            (c) => c.id === link.leftCommentId
+          );
+          const right = comments?.comments.find(
+            (c) => c.id === link.rightCommentId
+          );
+          if (!left || !right) {
+            throw new Error(
+              `comment(id: ${link.leftCommentId} or id: ${link.rightCommentId}) is not found`
+            );
+          }
+          return {
+            id: link.id,
+            left,
+            right,
+          };
+        });
+
+  links.map((link) => {
+    localLinks.push(link);
+  });
+  const getTempPosition = (link: Partial<ILink>) => {
+    let x0 = 0;
+    let y0 = 0;
+    let x1 = 200;
+    let y1 = 0;
+
+    if (!link.left || !link.left.id) {
+      if (cursolPosition) {
+        x0 = cursolPosition[0];
+        y0 = cursolPosition[1];
+      }
+    } else {
+      const id = link.left.id;
+      if (link.left.type === "problem") {
+        if (column1Position) x0 = column1Position.right;
+        const item = item1Heights.find((item) => item.id === id);
+        if (item) y0 = item.offsetY + item.height / 2 + margin;
+      }
+      if (link.left.type === "goal") {
+        if (column2Position) x0 = column2Position.right;
+        const item = item2Heights.find((item) => item.id === id);
+        if (item) y0 = item.offsetY + item.height / 2 + margin;
+      }
+      if (link.left.type === "solution") {
+        if (column3Position) x0 = column3Position.right;
+        const item = item3Heights.find((item) => item.id === id);
+        if (item) y0 = item.offsetY + item.height / 2 + margin;
+      }
+    }
+    if (!link.right) {
+      if (cursolPosition) {
+        x1 = cursolPosition[0];
+        y1 = cursolPosition[1];
+      }
+    } else {
+      const id = link.right.id;
+      if (link.right.type === "problem") {
+        if (typeof column1Position?.right === "number")
+          x1 = column1Position.left;
+        const item = item1Heights.find((item) => item.id === id);
+        if (item) y1 = item.offsetY + item.height / 2 + margin;
+      }
+      if (link.right.type === "goal") {
+        if (typeof column2Position?.right === "number")
+          x1 = column2Position.left;
+        const item = item2Heights.find((item) => item.id === id);
+        if (item) y1 = item.offsetY + item.height / 2 + margin;
+      }
+      if (link.right.type === "solution") {
+        if (typeof column3Position?.right === "number")
+          x1 = column3Position.left;
+        const item = item3Heights.find((item) => item.id === id);
+        if (item) y1 = item.offsetY + item.height / 2 + margin;
+      }
+    }
+    return { id: link.id, x0, y0, x1, y1 };
+  };
 
   const getLinkPosition = (link: ILink) => {
     let x0 = 0;
@@ -180,79 +419,113 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
     return { id: link.id, x0, y0, x1, y1 };
   };
 
-  const linkPositions = links.map(getLinkPosition);
+  // TODO: 画面サイズ変更に対応するには上が適切と思われるがエラーが出るため保留
+  // const linkPositions = useMemo(() => links.map(getLinkPosition), [links]);
+  const linkPositions = temporaryLink
+    ? [...links.map(getLinkPosition), getTempPosition(temporaryLink)]
+    : links.map(getLinkPosition);
 
-  const [connectorToggle, setConnectorToggle] = useState<
-    "left" | "right" | null
-  >(null);
-  let copyToggle: "left" | "right" | null = null;
-  const handleClickConnector = ({
-    id,
-    type,
-    target,
-  }: IIdeaListItemClickConnectorEvent) => {
-    const copyLinks: ILink[] = links;
+  // Linkのうち確定している方
+  // let copyToggle: "left" | "right" | null = null;
 
-    if (
-      (target === "left" && type === "problem") ||
-      (target === "right" && type === "solution")
-    ) {
-      if (copyToggle) copyLinks.pop();
-      copyToggle = null;
+  const {
+    data: productsData,
+    isLoading: isLoadingProducts,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["teams", "teamId", "products"],
+    queryFn: () =>
+      requests<{ products: IProduct[] }>(`/teams/${teamId}/products`),
+  });
+
+  if (isLoadingProducts) {
+    return null;
+  }
+  const getProductBoundingBox = (product: IProduct) => {
+    const findHeight = (commentId: string) => {
+      const h = item3Heights.find((e) => e.id === commentId);
+      return h;
+    };
+    const comments = product.comments;
+    const firstHeights = findHeight(comments[0].id);
+    if (!firstHeights) {
+      return undefined;
+    }
+    let top = firstHeights.offsetY;
+    let bottom = firstHeights.height + firstHeights.offsetY;
+    product.comments.forEach((comment) => {
+      const heights = findHeight(comment.id);
+      if (heights) {
+        if (heights.offsetY < top) {
+          top = heights.height;
+        }
+        if (heights.height + heights.offsetY > bottom) {
+          bottom = heights.height + heights.offsetY;
+        }
+      }
+    });
+    const marginT = bbox?.top || 0;
+    const x = bbox?.left || 0;
+    const width = (bbox?.right || 0) - (bbox?.left || 0);
+    return { x, width, y: marginT + top, height: bottom - top };
+  };
+  const products = productsData?.products.map((p) => {
+    const bbox = getProductBoundingBox(p);
+    return {
+      ...p,
+      bbox,
+    };
+  });
+  if (!products) {
+    return null;
+  }
+  const handleNewProduct = () => {
+    setIsAddingProduct(true);
+  };
+  const handleDecide = () => {
+    if (commentsSelected.length === 0) {
+      setIsAddingProduct(false);
       return;
     }
-    //片方をクリック中
-    //左が固定の時
-    if (copyToggle === "left") {
-      if (type === copyLinks[copyLinks.length - 1].right.type) {
-        copyLinks[copyLinks.length - 1].right.id = id;
-        copyToggle = null;
-      } else {
-        copyLinks.pop();
-        copyToggle = null;
-      }
-    } //右が固定の時
-    else if (copyToggle === "right") {
-      if (type === copyLinks[copyLinks.length - 1].left.type) {
-        copyLinks[copyLinks.length - 1].left.id = id;
-        copyToggle = null;
-      } else {
-        copyLinks.pop();
-        copyToggle = null;
-      }
-    }
-    //何もクリックしていないとき
-    else {
-      let left: ILinkElement = { type: "wait", id: "0", value: "" };
-      let right: ILinkElement = { type: "wait", id: "0", value: "" };
-      if (target === "left") {
-        copyToggle = "right";
-        right = { type: type, id: id, value: "" };
-        if (type === "goal") left = { type: "problem", id: "-1", value: "" };
-        else left = { type: "goal", id: "-1", value: "" };
-      } else if (target === "right") {
-        copyToggle = "left";
-        left = { type: type, id: id, value: "" };
-        if (type === "goal") right = { type: "solution", id: "-1", value: "" };
-        else right = { type: "goal", id: "-1", value: "" };
-      }
-      copyLinks.push({
-        id: String(Number(copyLinks[copyLinks.length - 1].id) + 1),
-        left: left,
-        right: right,
-      });
-      setConnectorToggle(copyToggle);
-      console.log(copyToggle);
-      setLinks(copyLinks);
-    }
-  };
-  useEffect(() => {
-    lists.forEach((list) => {
-      list.items.forEach((item) => {
-        item.onClickConnector = handleClickConnector;
-      });
+    void requests(`/teams/${teamId}/products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        product: {
+          name: "新しいプロダクト",
+          comments: comments?.comments.filter((c) =>
+            commentsSelected.some((e) => e.id === c.id)
+          ),
+          techs: [],
+        },
+      }),
+    }).then(() => {
+      setIsAddingProduct(false);
+      setCommentsSelected([]);
+      void refetchProducts();
     });
-  }, [lists]);
+  };
+  const handleAddItem = ({ id, value }: { id: string; value: string }) => {
+    if (value === "") {
+      return;
+    }
+    void requests(`/teams/${teamId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: {
+          value,
+          type: id,
+        },
+      }),
+    }).then(() => {
+      void refetchComments();
+    });
+  };
 
   return (
     <div className={styles.Idea}>
@@ -264,6 +537,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
           leftStyle="circle"
           rightStyle="triangle"
           items={lists[0].items}
+          onAddItem={handleAddItem}
           onChangeItemsHeight={handleChangeItemsHeight}
         />
       </div>
@@ -276,6 +550,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
           rightStyle="triangle"
           items={lists[1].items}
           onChangeItemsHeight={handleChangeItemsHeight}
+          onAddItem={handleAddItem}
         />
       </div>
       <div className={styles.list} ref={column3}>
@@ -287,6 +562,8 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
           rightStyle="circle"
           items={lists[2].items}
           onChangeItemsHeight={handleChangeItemsHeight}
+          onAddItem={handleAddItem}
+          onChangeBbox={(e) => setBbox(e)}
         />
       </div>
       {linkPositions.map((link) => (
@@ -300,7 +577,28 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId }) => {
           connectorToggle={connectorToggle}
         />
       ))}
+      {!isAddingProduct ? (
+        <button onClick={handleNewProduct}>プロダクトを追加する</button>
+      ) : (
+        <button onClick={handleDecide}>決定</button>
+      )}
+      {products.map((product) => (
+        <Fragment key={product.id}>
+          {product.bbox && (
+            <ProductFrame
+              id={product.id}
+              label={product.name}
+              x={product.bbox.x}
+              y={product.bbox.y}
+              width={product.bbox.width}
+              height={product.bbox.height}
+              onClick={onProductClick}
+            />
+          )}
+        </Fragment>
+      ))}
     </div>
   );
 };
+
 export default IdeaPage;

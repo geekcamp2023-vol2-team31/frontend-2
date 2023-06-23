@@ -20,6 +20,9 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
   const postLink = (data: ITeamLinksPostBody) =>
     requests<ITeamLinksPostResponse>(url, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
   const putLink = (linkId: string, data: ITeamLinkPutBody) =>
