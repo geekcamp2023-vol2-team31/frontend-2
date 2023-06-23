@@ -3,7 +3,7 @@
 POST http://localhost:4000/teams
 Content-Type: application/json
 
-{ "team": { "name": "新しいチーム" } }
+{ "name": "新しいチーム" }
 
 ### GET /teams/:teamId
 GET http://localhost:4000/teams/1

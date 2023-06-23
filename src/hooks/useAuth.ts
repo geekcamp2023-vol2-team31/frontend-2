@@ -15,7 +15,7 @@ type TBody = {
 };
 
 export const useAuth: TUseAuth = (token: string) => {
-  const url = "auth";
+  const url = "/auth";
 
   const postAuth = () =>
     requests<IAuthPostResponse>(url, {

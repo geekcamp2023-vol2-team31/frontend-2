@@ -10,15 +10,19 @@ Content-Type: application/json
         "id": "1",
         "name": "Yamada 1Taro",
         "bio": "Yamadaです。お願いします",
-        "techs": [
+        "userToTechs": [
             {
-                "id": "1",
-                "name": "TypeScript",
+                "tech": {
+                    "id": "1",
+                    "name": "TypeScript"
+                },
                 "level": "beginner"
             },
             {
-                "id": "2",
-                "name": "JavaScript",
+                "tech": {
+                    "id": "2",
+                    "name": "JavaScript"
+                },
                 "level": "expert"
             }
         ]
