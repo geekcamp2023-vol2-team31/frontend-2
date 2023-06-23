@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import IdeaListItem, {
   IIdeaListItemChangeCheckboxEvent,
   IIdeaListItemClickConnectorEvent,
@@ -6,6 +6,7 @@ import IdeaListItem, {
 } from "./IdeaListItem";
 import classes from "./IdeaList.module.css";
 import { ReactSortable } from "react-sortablejs";
+import NewIdeaListItem from "./NewIdeaListItem/NewIdeaListItem";
 
 interface IIdeaListProps {
   id: string;
@@ -23,6 +24,13 @@ interface IIdeaListProps {
   }[];
   onChangeItemsHeight?: (event: IIdeaListChangeItemsHeightEvent) => void;
   onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
+  onAddItem?: (event: IIdeaListAddItemEvent) => void;
+  onChangeBbox?: (event: {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  }) => void;
 }
 
 interface IIdeaListChangeItemsHeightEvent {
@@ -40,6 +48,11 @@ interface IIdeaListChangeItemsEvent {
     id: string;
     value: string;
   }[];
+}
+
+interface IIdeaListAddItemEvent {
+  id: string;
+  value: string;
 }
 
 // 要素の位置と大きさを表す型
@@ -64,11 +77,26 @@ const IdeaList: FC<IIdeaListProps> = ({
   items,
   onChangeItemsHeight,
   onChangeItems,
+  onAddItem,
+  onChangeBbox,
 }) => {
   const [itemHeights, setItemHeights] = useState<IItemHeight[]>(
     // 初期値は全idにheight: 0を割り当てる。
     items.map((item) => ({ id: item.id, height: 0 }))
   );
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (ref.current && onChangeBbox) {
+      const bbox = ref.current.getBoundingClientRect();
+      onChangeBbox({
+        top: bbox.top,
+        bottom: bbox.bottom,
+        left: bbox.left,
+        right: bbox.right,
+      });
+    }
+  }, [ref.current]);
 
   // 子要素の高さが変わったときにonChangeItemsHeightを呼び出す
   useEffect(() => {
@@ -90,7 +118,7 @@ const IdeaList: FC<IIdeaListProps> = ({
 
       onChangeItemsHeight({ id, items: resultItems });
     }
-  }, [id, itemHeights, onChangeItemsHeight]);
+  }, [id, itemHeights]);
 
   const handleChangeHeight = ({
     id,
@@ -118,8 +146,14 @@ const IdeaList: FC<IIdeaListProps> = ({
     }
   };
 
+  const handleAddItem = (e: IIdeaListAddItemEvent) => {
+    if (onAddItem) {
+      onAddItem(e);
+    }
+  };
+
   return (
-    <section className={classes.card}>
+    <section className={classes.card} ref={ref}>
       <h2 className={classes.heading}>{label}</h2>
       <ReactSortable
         className={classes["children-container"]}
@@ -136,6 +170,14 @@ const IdeaList: FC<IIdeaListProps> = ({
           />
         ))}
       </ReactSortable>
+      <div style={{ marginTop: "8px" }}>
+        <NewIdeaListItem
+          id={id}
+          onEnter={handleAddItem}
+          leftStyle={leftStyle}
+          rightStyle={rightStyle}
+        />
+      </div>
     </section>
   );
 };
