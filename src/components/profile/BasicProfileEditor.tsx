@@ -2,22 +2,23 @@ import { requests } from "@/utils/requests";
 import style from "./BasicProfileEditor.module.scss";
 import { FC, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { IPutUsersMeBody } from "@/@types/user/IPutUsersMeBody";
+import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
+import { IUsersMePutBody } from "@/@types/user/IUsersMePutBody";
 
 export const BasicProfileEditor: FC = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
 
   const getUsersMe = () => {
-    return requests<IPutUsersMeBody>("/users/me");
+    return requests<IUsersMeGetResponse>("/users/me");
   };
   const query = useQuery({
     queryKey: ["users", "me"],
     queryFn: getUsersMe,
   });
 
-  const putUsersMe = (body: { user: Partial<IPutUsersMeBody["user"]> }) => {
-    return requests("/users/me", {
+  const putUsersMe = (body: { user: Partial<IUsersMePutBody["user"]> }) => {
+    return requests<IUsersMePutBody>("/users/me", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
