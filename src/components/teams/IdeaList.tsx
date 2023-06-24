@@ -10,6 +10,7 @@ import { ReactSortable } from "react-sortablejs";
 interface IIdeaListProps {
   id: string;
   label: string;
+  type: "problem" | "solution" | "goal";
   leftStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのleftStyle
   rightStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのrightStyle
   items: {
@@ -25,7 +26,7 @@ interface IIdeaListProps {
   onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
 }
 
-interface IIdeaListChangeItemsHeightEvent {
+export interface IIdeaListChangeItemsHeightEvent {
   id: string;
   items: {
     id: string;
@@ -59,16 +60,18 @@ const itemMargin = 8;
 const IdeaList: FC<IIdeaListProps> = ({
   id,
   label,
+  type,
   leftStyle,
   rightStyle,
   items,
   onChangeItemsHeight,
   onChangeItems,
 }) => {
-  const [itemHeights, setItemHeights] = useState<IItemHeight[]>(
-    // 初期値は全idにheight: 0を割り当てる。
-    items.map((item) => ({ id: item.id, height: 0 }))
-  );
+  const [itemHeights, setItemHeights] = useState<IItemHeight[]>([]);
+  useEffect(() => {
+    if (itemHeights.length === 0)
+      setItemHeights(items.map((item) => ({ id: item.id, height: 0 })));
+  }, [items]);
 
   // 子要素の高さが変わったときにonChangeItemsHeightを呼び出す
   useEffect(() => {
@@ -78,7 +81,6 @@ const IdeaList: FC<IIdeaListProps> = ({
         height: number;
         offsetY: number;
       }[] = [];
-
       let offsetY = offsetYOfFirstItem;
       itemHeights.forEach((item) => {
         resultItems.push({
@@ -87,10 +89,9 @@ const IdeaList: FC<IIdeaListProps> = ({
         });
         offsetY += item.height + itemMargin;
       });
-
       onChangeItemsHeight({ id, items: resultItems });
     }
-  }, [id, itemHeights, onChangeItemsHeight]);
+  }, [id, itemHeights /*, onChangeItemsHeight*/]);
 
   const handleChangeHeight = ({
     id,
@@ -129,6 +130,7 @@ const IdeaList: FC<IIdeaListProps> = ({
         {items.map((item) => (
           <IdeaListItem
             key={item.id}
+            type={type}
             {...item}
             leftStyle={leftStyle}
             rightStyle={rightStyle}
