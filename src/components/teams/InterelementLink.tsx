@@ -1,12 +1,14 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, Key, useEffect, useRef, useState } from "react";
 import styles from "./InterelementLink.module.css";
 
-interface IInterelementLink {
+export interface IInterelementLink {
+  id?: Key | null | undefined;
   x0: number;
   y0: number;
   x1: number;
   y1: number;
-  emphasized?: true;
+  emphasized?: boolean;
+  connectorToggle?: "left" | "right" | null;
 }
 
 const InterelementLink: FC<IInterelementLink> = ({
@@ -15,54 +17,49 @@ const InterelementLink: FC<IInterelementLink> = ({
   x1,
   y1,
   emphasized,
+  connectorToggle,
 }) => {
-  const margin = 10;
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
+  const [linkStyle, setLinkStyle] = useState({});
+  let distance, degree, width, color;
+  const margin = 4;
+  const linkRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!canvasRef.current) {
+    if (!linkRef.current) {
       return;
     }
-    const context = canvasRef.current.getContext("2d");
-    if (!context) return;
-    setCtx(context);
-  }, [canvasRef]);
+    redraw();
+  }, [linkRef]);
 
   const redraw = () => {
-    if (!canvasRef.current || !ctx) {
+    // console.log(connectorToggle)
+    if (!linkRef.current) {
       return;
     }
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     if (emphasized) {
-      ctx.strokeStyle = "rgba(255,0,0,1)";
-      ctx.lineWidth = 5;
+      width = 5;
+      color = "rgba(255,0,0,1)";
     } else {
-      ctx.strokeStyle = "rgba(255,0,0,0.3)";
-      ctx.lineWidth = 4;
+      color = "rgba(255,0,0,0.3)";
+      width = 4;
     }
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(margin, Math.max(y0 - y1 + margin, margin));
-    ctx.lineTo(x1 - x0 + margin, Math.max(y1 - y0 + margin, margin));
-    ctx.stroke();
+    distance = Math.sqrt(
+      (x1 + margin - (x0 - margin)) * (x1 + margin - (x0 - margin)) +
+        (y1 - y0) * (y1 - y0)
+    );
+    degree = (Math.atan2(y1 - y0, x1 - x0 + 2 * margin) * 180) / Math.PI;
+    setLinkStyle({
+      left: `${x0}px`,
+      top: `${y0 - width / 2}px`,
+      width: `${distance}px`,
+      height: `${width}px`,
+      backgroundColor: `${color}`,
+      transform: `rotate(${degree}deg)`,
+      pointerEvents: `${connectorToggle ? "none" : "true"}`,
+    });
   };
 
-  useEffect(redraw, [x0, y0, x1, y1, emphasized, ctx]);
-
-  return (
-    <div>
-      <canvas
-        ref={canvasRef}
-        width={x1 - x0 + 2 * margin}
-        height={Math.abs(y1 - y0) + 2 * margin}
-        className={styles.link}
-        style={{
-          left: `${x0 - margin}px`,
-          top: `${Math.min(y1, y0) - margin}px`,
-        }}
-      />
-    </div>
-  );
+  useEffect(redraw, [x0, y0, x1, y1, emphasized, connectorToggle]);
+  return <div className={styles.link} ref={linkRef} style={linkStyle}></div>;
 };
 
 export default InterelementLink;

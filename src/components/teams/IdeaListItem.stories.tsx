@@ -18,7 +18,7 @@ export default meta;
 export const Default: StoryObj<typeof IdeaListItem> = {};
 Default.args = {
   id: "1",
-  value: "test",
+  body: "test",
   leftStyle: "circle",
   rightStyle: "triangle",
   onChangeCheckbox: undefined,
@@ -27,7 +27,7 @@ Default.args = {
 export const Emphasized: StoryObj<typeof IdeaListItem> = {};
 Emphasized.args = {
   id: "1",
-  value: "test",
+  body: "test",
   leftStyle: "circle",
   rightStyle: "triangle",
   emphasized: true,
@@ -36,7 +36,7 @@ Emphasized.args = {
 export const WithCheckbox: StoryObj<typeof IdeaListItem> = {};
 WithCheckbox.args = {
   id: "1",
-  value: "test",
+  body: "test",
   leftStyle: "circle",
   rightStyle: "triangle",
   checkboxValue: true,
@@ -45,7 +45,7 @@ WithCheckbox.args = {
 export const Circle: StoryObj<typeof IdeaListItem> = {};
 Circle.args = {
   id: "1",
-  value: "test",
+  body: "test",
   leftStyle: "circle",
   rightStyle: "circle",
 };
@@ -53,7 +53,7 @@ Circle.args = {
 export const Triangle: StoryObj<typeof IdeaListItem> = {};
 Triangle.args = {
   id: "1",
-  value: "test",
+  body: "test",
   leftStyle: "triangle",
   rightStyle: "triangle",
 };

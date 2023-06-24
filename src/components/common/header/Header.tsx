@@ -24,11 +24,11 @@ export const Header: FC<HeaderProps> = ({
       {invidationCode && (
         <div className={style.flex}>
           <button className={style.buttonContainer}>
-            <img src="assets/join-team.svg" alt="チームに参加" />
+            <img src="/assets/join-team.svg" alt="チームに参加" />
             <strong>コード{invidationCode}</strong>
           </button>
           <button className={style.buttonContainer}>
-            <img src="assets/group.svg" alt="グループ" />
+            <img src="/assets/group.svg" alt="グループ" />
           </button>
         </div>
       )}
