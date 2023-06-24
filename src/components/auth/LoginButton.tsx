@@ -14,15 +14,13 @@ export const LoginButton = () => {
 
   useEffect(() => {
     if (session) {
+      setData(token);
       void router.push("/home");
     }
   }, [session, router]);
   const handleClick = async () => {
     try {
-      await signIn("github").then(() => {
-        console.log("token", token);
-        setData(token);
-      });
+      await signIn("github");
     } catch (error) {
       toast.error("ログインに失敗しました。");
     }
