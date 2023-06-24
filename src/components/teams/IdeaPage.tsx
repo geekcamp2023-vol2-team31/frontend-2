@@ -269,11 +269,13 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     const handleMouseMove = (e: MouseEvent) => {
       setCursolPosition([e.pageX, e.pageY]);
     };
-    document.body.addEventListener("mousemove", handleMouseMove);
+    if (temporaryLink) {
+      document.body.addEventListener("mousemove", handleMouseMove);
+    }
     return () => {
       document.body.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [temporaryLink]);
 
   const handleChangeItemsHeight = ({
     id,
