@@ -1,15 +1,20 @@
+import { ITeamCommentPutBody } from "@/@types/team/comments/ITeamCommentPutBody";
 import { ITeamCommentsGetResponse } from "@/@types/team/comments/ITeamCommentsGetResponse";
 import { ITeamCommentsPostBody } from "@/@types/team/comments/ITeamCommentsPostBody";
 import { ITeamCommentsPostResponse } from "@/@types/team/comments/ITeamCommentsPostResponse";
-import { ITeamCommentPutBody } from "@/@types/team/comments/ITeamCommentPutBody";
 import { escape } from "@/utils/escape";
 import { requests } from "@/utils/requests";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/utils/queryClient";
+
+type ElementOf<T> = T extends (infer U)[] ? U : never;
+
+type ITeamCommentsGetResponseWithoutNext = {
+  comments: Omit<ElementOf<ITeamCommentsGetResponse["comments"]>, "next">[];
+};
 
 type TUseTeamComments = (teamId: string) => {
-  data: ITeamCommentsGetResponse | undefined;
-  setData: (data: ITeamCommentsGetResponse) => void;
+  data: ITeamCommentsGetResponseWithoutNext | undefined;
+  setData: (data: ITeamCommentsGetResponseWithoutNext) => void;
   isLoading: boolean;
 };
 
@@ -20,17 +25,11 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
   const postComment = (data: ITeamCommentsPostBody) =>
     requests<ITeamCommentsPostResponse>(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(data),
     });
   const putComment = (commentId: string, data: ITeamCommentPutBody) =>
     requests<unknown>(`${url}/${commentId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(data),
     });
   const deleteComment = (commentId: string) =>
@@ -39,7 +38,7 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
     });
 
   // query: データ取得のサポート
-  const { data, isLoading } = useQuery<ITeamCommentsGetResponse>({
+  const { data, isLoading, refetch } = useQuery<ITeamCommentsGetResponse>({
     queryKey: ["teams", teamId, "comments"],
     queryFn: getComments,
   });
@@ -48,16 +47,19 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
   const mutation = useMutation<
     ITeamCommentsGetResponse,
     unknown,
-    ITeamCommentsGetResponse
+    ITeamCommentsGetResponseWithoutNext
   >({
     mutationFn: async (newData) => {
       if (data === undefined) {
         return newData;
       }
 
-      const oldIds = data.comments.map((comment) => comment.id);
+      const oldComments = data.comments;
+      const newComments = newData.comments;
+      const oldIds = oldComments.map((comment) => comment.id);
+      const newIds = newComments.map((comment) => comment.id);
       const oldIdsSet = new Set(oldIds);
-      const newIdsSet = new Set(newData.comments.map((comment) => comment.id));
+      const newIdsSet = new Set(newIds);
 
       // 古いリストにあって新しいリストにない項目は削除する。
       for (const id of oldIds) {
@@ -66,20 +68,37 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
         }
       }
 
-      for (const comment of newData.comments) {
-        // 古いリストにない項目は追加する。
+      // 新しいリストにあって古いリストにない項目は追加する。
+      for (const comment of newComments) {
         if (oldIdsSet.has(comment.id) === false) {
           await postComment({ comment });
-          continue;
         }
+      }
+
+      const oldCommentsWithNextMap = new Map(
+        oldComments.map<[string, ITeamCommentsGetResponse["comments"][number]]>(
+          (comment) => [comment.id, comment]
+        )
+      );
+      const newCommentsWithNext = newComments.map<
+        ITeamCommentsGetResponse["comments"][number]
+      >((comment, idx) => {
+        const next = newComments[idx]?.id;
+        if (next === undefined) {
+          return { ...comment, next: undefined };
+        }
+        return { ...comment, next };
+      });
+
+      for (const comment of newCommentsWithNext) {
+        const oldComment = oldCommentsWithNextMap.get(comment.id);
 
         // 変更のない項目はそのままにする。
-        const oldComment = data.comments.find(
-          (oldComment) => comment.id === oldComment.id
-        );
         if (
           oldComment === undefined ||
-          (oldComment.body === comment.body && oldComment.type === comment.type)
+          (oldComment.next === comment.next &&
+            oldComment.body === comment.body &&
+            oldComment.type === comment.type)
         ) {
           continue;
         }
@@ -90,8 +109,8 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
 
       return newData;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["teams", teamId, "comments"], data);
+    onSuccess: async () => {
+      await refetch();
     },
   });
 

@@ -17,7 +17,17 @@ const log = (msg) => {
   console.log("DEBUG @mock:", msg);
 };
 // ↓ ダミーデータの宣言 ↓
-let techs = [{ name: "TypeScript" }, { name: "JavaScript" }, { name: "Java" }];
+let techs = [
+  {
+    tech: { name: "TypeScript" },
+  },
+  {
+    tech: { name: "JavaScript" },
+  },
+  {
+    tech: { name: "Java" },
+  },
+];
 
 let teams = [
   {
@@ -37,12 +47,12 @@ let user = {
   id: "1",
   name: "Yamada Taro",
   bio: "Yamadaです。お願いします",
-  techs: [
+  userToTechs: [
     { ...techs[0], level: "beginner" },
     { ...techs[1], level: "expert" },
   ],
-  owns: [teams[0]],
-  belongs: [teams[0], teams[1]],
+  teamsBelongs: [teams[0], teams[1]],
+  teamsOwns: [teams[0]],
 };
 
 let user2 = {
@@ -127,7 +137,7 @@ app.put("/users/me", (req, res) => {
 
 // PUT /users/me/teams/:invitationCode]
 app.put("/users/me/teams/:invitationCode", (req, res) => {
-  user.belongs.push(newTeam);
+  user.teamsBelongs.push(newTeam);
   res.send({ team: newTeam });
 });
 
@@ -136,12 +146,10 @@ app.put("/users/me/teams/:invitationCode", (req, res) => {
 // Response: IPostTeamsResponse | UnauthorizedError
 // ここでは常に成功する
 app.post("/teams", (req, res) => {
-  log({ bod: req.body });
-  const {
-    team: { name },
-  } = req.body;
+  const { name } = req.body;
   const id = uniqueId();
-  user.owns.push({ id, name });
+  user.teamsOwns.push({ id, name });
+  user.teamsBelongs.push({ id, name });
   teams.push({ id, name });
   res.send({
     team: {

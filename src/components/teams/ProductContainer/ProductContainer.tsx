@@ -1,12 +1,10 @@
-import { FC, useMemo } from "react";
-import style from "./ProductContainer.module.scss";
 import { CloseIcon } from "@/assets/close";
-import TechListItem from "../TechListItem/TechListItem";
-import { requests } from "@/utils/requests";
-import { useQuery } from "@tanstack/react-query";
+import { useTeam } from "@/hooks/useTeam";
+import { useTeamProducts } from "@/hooks/useTeamProducts";
 import { useIsSidebarOpen } from "@/store/isSidebarOpen";
-import { ITeamGetResponse } from "@/@types/team/ITeamGetResponse";
-import { ITeamProductsGetResponse } from "@/@types/team/products/ITeamProductsGetResponse";
+import { FC, useMemo } from "react";
+import TechListItem from "../TechListItem/TechListItem";
+import style from "./ProductContainer.module.scss";
 
 type Props = {
   productId: string;
@@ -14,44 +12,36 @@ type Props = {
 };
 
 export const ProductContainer: FC<Props> = ({ productId, teamId }) => {
-  const getTeam: () => Promise<ITeamGetResponse> = () =>
-    requests(`/teams/${teamId}`);
-  const { data: teamData } = useQuery<ITeamGetResponse>(["teams"], getTeam);
-  const teamMember = useMemo(() => {
+  const { data: teamData } = useTeam(teamId);
+
+  const members = useMemo(() => {
     return teamData && teamData.team.members
       ? [...teamData.team.members, teamData.team.owner]
       : [];
   }, [teamData]);
-  const techProficiency = useMemo(() => {
-    const hashmap: {
-      [key: string]: {
-        userName: string;
-        userToTech: ITeamGetResponse["team"]["owner"]["userToTechs"];
-      }[];
-    } = {};
-    teamMember.map((member) => {
-      hashmap[member.userToTechs.tech.name] = [
-        ...hashmap[member.userToTechs.tech.name],
-        { userToTech: member.userToTechs, userName: member.name },
-      ];
-    });
-    return hashmap;
-  }, [teamMember]);
 
-  const getProducts: () => Promise<ITeamProductsGetResponse> = () =>
-    requests(`/products`);
-  const { data: productsData } = useQuery<ITeamProductsGetResponse>(
-    ["products"],
-    getProducts
-  );
+  const membersTech = members
+    .map((user) => {
+      return user.userToTechs.map((tech) => {
+        return { user, userName: user.name, userToTech: tech };
+      });
+    })
+    .flat(1);
 
-  const product = useMemo(() => {
-    let selectedProductIndex = 0;
-    productsData?.products.map((product, index) => {
-      if (product.id === productId) selectedProductIndex = index;
-    });
-    return productsData?.products[selectedProductIndex];
-  }, [productId, productsData?.products]);
+  const membersByTechMap: Map<string, typeof membersTech> = new Map();
+  membersTech.forEach((item) => {
+    const mapItem = membersByTechMap.get(item.userToTech.tech.name);
+    if (mapItem === undefined) {
+      const newMapItem = [item];
+      membersByTechMap.set(item.userToTech.tech.name, newMapItem);
+      return;
+    }
+    mapItem.push(item);
+  });
+
+  const { data: productsData } = useTeamProducts(teamId);
+  const product = productsData?.products.find((p) => p.id === productId);
+  const productTechs = product?.techs ?? [];
 
   const toggleOpen = useIsSidebarOpen((state) => state.toggleOpen);
 
@@ -70,7 +60,7 @@ export const ProductContainer: FC<Props> = ({ productId, teamId }) => {
       <div className={style.techContainer}>
         <p className={style.title}>使用予定の技術</p>
         <div className={style.techWrapper}>
-          {product?.techs.map((tech) => {
+          {productTechs.map((tech) => {
             return (
               <TechListItem
                 key={tech.name}
@@ -78,13 +68,10 @@ export const ProductContainer: FC<Props> = ({ productId, teamId }) => {
                 label={tech.name}
                 leftSlot={
                   <div
-                    style={{
-                      backgroundColor:
-                        techProficiency[tech.name][0].userToTech.tech.name,
-                    }}
+                    style={{ backgroundColor: tech.color ?? "#979490" }}
                   ></div>
                 }
-                users={techProficiency[tech.name]}
+                users={membersByTechMap.get(tech.name) ?? []}
               />
             );
           })}
@@ -93,21 +80,21 @@ export const ProductContainer: FC<Props> = ({ productId, teamId }) => {
       <div className={style.techContainer}>
         <p className={style.title}>メンバーが持っている技術</p>
         <div className={style.techWrapper}>
-          {Object.keys(techProficiency).map((techKey) => {
+          {Array.from(membersByTechMap.entries()).map(([techName, members]) => {
             return (
               <TechListItem
-                key={techKey}
-                id={techKey}
-                label={techKey}
+                key={techName}
+                id={techName}
+                label={techName}
                 leftSlot={
                   <div
                     style={{
                       backgroundColor:
-                        techProficiency[techKey][0].userToTech.tech.name,
+                        members[0].userToTech.tech.color ?? "#979490",
                     }}
                   ></div>
                 }
-                users={techProficiency[techKey]}
+                users={members}
               />
             );
           })}

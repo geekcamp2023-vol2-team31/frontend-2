@@ -88,12 +88,12 @@ export const TechProfileEditor: FC = () => {
   };
 
   const resetInput = () => {
-    if (!data) return;
+    if (!data || !data.user.techs) return;
     setTechs(data.user.techs);
   };
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || !data.user.techs) return;
     setTechs(data.user.techs);
   }, [data]);
 
@@ -101,6 +101,7 @@ export const TechProfileEditor: FC = () => {
     return null;
   }
   // おすすめの技術のうち、userが選択していないもの
+  console.log({ techs });
   const recommendedTechsToShow = recommendedTechs.filter(
     (tech) => !techs.some((t) => t.name === tech)
   );

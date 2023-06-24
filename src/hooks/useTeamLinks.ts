@@ -3,7 +3,6 @@ import { ITeamLinksGetResponse } from "@/@types/team/links/ITeamLinksGetResponse
 import { ITeamLinksPostBody } from "@/@types/team/links/ITeamLinksPostBody";
 import { ITeamLinksPostResponse } from "@/@types/team/links/ITeamLinksPostResponse";
 import { escape } from "@/utils/escape";
-import { queryClient } from "@/utils/queryClient";
 import { requests } from "@/utils/requests";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -20,17 +19,11 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
   const postLink = (data: ITeamLinksPostBody) =>
     requests<ITeamLinksPostResponse>(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(data),
     });
   const putLink = (linkId: string, data: ITeamLinkPutBody) =>
     requests<unknown>(`${url}/${linkId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(data),
     });
   const deleteLink = (linkId: string) =>
@@ -39,7 +32,7 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
     });
 
   // query: データ取得のサポート
-  const { data, isLoading } = useQuery<ITeamLinksGetResponse>({
+  const { data, isLoading, refetch } = useQuery<ITeamLinksGetResponse>({
     queryKey: ["teams", teamId, "links"],
     queryFn: getLinks,
   });
@@ -89,8 +82,8 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
 
       return newData;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["teams", teamId, "links"], data);
+    onSuccess: async () => {
+      await refetch();
     },
   });
 

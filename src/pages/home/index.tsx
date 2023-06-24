@@ -10,7 +10,6 @@ import { useMemo } from "react";
 const Home = () => {
   const router = useRouter();
 
-  // TODO: useUsersMe を利用できた方が良い
   const { data, isLoading } = useUsersMe();
 
   const handleClickTeam = ({ team: { id } }: { team: { id: string } }) => {
@@ -50,15 +49,13 @@ const Home = () => {
     });
   };
 
-  const belongs = useMemo(() => {
-    return data?.user.teamsBelongs.map((team) => {
-      return { id: team.id, name: team.name };
-    });
-  }, [data?.user.teamsBelongs]);
-
-  if (isLoading) {
+  if (isLoading || !data?.user) {
     return null;
   }
+  const belongs =
+    data?.user.teamsBelongs.map((team) => {
+      return { id: team.id, name: team.name };
+    }) || [];
   return (
     <div>
       <Header title="ようこそ!" />

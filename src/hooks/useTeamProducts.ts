@@ -4,7 +4,6 @@ import { ITeamProductsPostBody } from "@/@types/team/products/ITeamProductsPostB
 import { ITeamProductsPostResponse } from "@/@types/team/products/ITeamProductsPostResponse";
 import { escape } from "@/utils/escape";
 import { intersection } from "@/utils/intersection";
-import { queryClient } from "@/utils/queryClient";
 import { requests } from "@/utils/requests";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -34,7 +33,7 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
     });
 
   // query: データ取得のサポート
-  const { data, isLoading } = useQuery<ITeamProductsGetResponse>({
+  const { data, isLoading, refetch } = useQuery<ITeamProductsGetResponse>({
     queryKey: ["teams", teamId, "products"],
     queryFn: getProducts,
   });
@@ -71,17 +70,23 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
         // 変更のない項目はそのままにする。
         // 共通集合をとって長さが違えば、配列が変更されているといえる。
         const oldProduct = data.products.find(
-          (olProduct) => product.id === olProduct.id
+          (oldProduct) => product.id === oldProduct.id
+        );
+        const commentsIntersection = intersection(
+          oldProduct?.comments ?? [],
+          product.comments
+        );
+        const techsIntersection = intersection(
+          oldProduct?.techs ?? [],
+          product.techs
         );
         if (
           oldProduct === undefined ||
           (oldProduct.name === product.id &&
-            intersection(oldProduct.comments, product.comments).length ===
-              oldProduct.comments.length &&
-            intersection(
-              oldProduct.techs.map((tech) => tech.name),
-              product.techs.map((tech) => tech.name)
-            ).length === oldProduct.techs.length)
+            commentsIntersection.length === oldProduct.comments.length &&
+            commentsIntersection.length === product.comments.length &&
+            techsIntersection.length === oldProduct.techs.length &&
+            techsIntersection.length === product.techs.length)
         ) {
           continue;
         }
@@ -92,8 +97,8 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
 
       return newData;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(["teams", teamId, "products"], data);
+    onSuccess: async () => {
+      await refetch();
     },
   });
 
