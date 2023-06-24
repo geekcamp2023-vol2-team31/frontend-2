@@ -10,10 +10,10 @@ import IdeaList, { IIdeaListChangeItemsHeightEvent } from "./IdeaList";
 import InterelementLink from "./InterelementLink";
 import styles from "@/components/teams/IdeaPage.module.css";
 import { IIdeaListItemClickConnectorEvent } from "./IdeaListItem";
-import { useQuery } from "@tanstack/react-query";
-import { requests } from "@/utils/requests";
 import { useTeamLinks } from "@/hooks/useTeamLinks";
 import { ProductFrame } from "./ProductFrame";
+import { useTeamComments } from "@/hooks/useTeamComments";
+import { useTeamProducts } from "@/hooks/useTeamProducts";
 
 interface IIdeaPageProps {
   teamId: string;
@@ -23,7 +23,7 @@ type CommentType = "problem" | "solution" | "goal";
 export interface IComment {
   id: string;
   type: CommentType;
-  value: string;
+  body: string;
 }
 interface ILinkElement {
   id: string;
@@ -93,14 +93,10 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
 
   // コメント一覧の取得
   const {
-    data: comments,
+    data: commentsData,
     isLoading: isLoadingComments,
-    refetch: refetchComments,
-  } = useQuery({
-    queryKey: ["teams", "teamId", "comments"],
-    queryFn: () =>
-      requests<{ comments: IComment[] }>(`/teams/${teamId}/comments`),
-  });
+    setData: setComments,
+  } = useTeamComments(teamId);
   const addLink = (link: Partial<ILink>) => {
     if (!linksData) {
       throw new Error("linksデータが取得できていません");
@@ -221,7 +217,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   };
 
   const lists = useMemo(() => {
-    if (!comments?.comments) {
+    if (!commentsData?.comments) {
       return [{ items: [] }, { items: [] }, { items: [] }];
     }
     const filterByType =
@@ -233,18 +229,18 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     });
     return [
       {
-        items: comments.comments
+        items: commentsData.comments
           .filter(filterByType("problem"))
           .map(addClickHander),
       },
       {
-        items: comments.comments
+        items: commentsData.comments
           .filter(filterByType("goal"))
           .map(addClickHander),
       },
       {
         // 解決策についてはチェックボックスを付け得る
-        items: comments.comments
+        items: commentsData.comments
           .filter(filterByType("solution"))
           .map(addClickHander)
           .map((comment) => {
@@ -262,7 +258,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
           }),
       },
     ];
-  }, [comments, isAddingProduct, commentsSelected]);
+  }, [commentsData, isAddingProduct, commentsSelected]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -276,6 +272,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     };
   }, [temporaryLink]);
 
+  // render関係: アイテムの高さ変更時
   const handleChangeItemsHeight = ({
     id,
     items,
@@ -290,27 +287,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     }
   };
 
-  const links =
-    isLoadingComments || isLoadingLinks || !linksData
-      ? []
-      : linksData.links.map((link) => {
-          const left = comments?.comments.find(
-            (c) => c.id === link.leftCommentId
-          );
-          const right = comments?.comments.find(
-            (c) => c.id === link.rightCommentId
-          );
-          if (!left || !right) {
-            throw new Error(
-              `comment(id: ${link.leftCommentId} or id: ${link.rightCommentId}) is not found`
-            );
-          }
-          return {
-            id: link.id,
-            left,
-            right,
-          };
-        });
+  const links = linksData?.links ?? [];
 
   links.map((link) => {
     localLinks.push(link);
@@ -464,16 +441,14 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
   const {
     data: productsData,
     isLoading: isLoadingProducts,
-    refetch: refetchProducts,
-  } = useQuery({
-    queryKey: ["teams", "teamId", "products"],
-    queryFn: () =>
-      requests<{ products: IProduct[] }>(`/teams/${teamId}/products`),
-  });
+    setData: setProductsData,
+  } = useTeamProducts(teamId);
 
   if (isLoadingProducts) {
     return null;
   }
+
+  // render関係: フレームの大きさを計算していそう。
   const getProductBoundingBox = (product: IProduct) => {
     const findHeight = (commentId: string) => {
       const h = item3Heights.find((e) => e.id === commentId);
@@ -502,6 +477,8 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     const width = (bbox?.right || 0) - (bbox?.left || 0);
     return { x, width, y: marginT + top, height: bottom - top };
   };
+
+  // render関係: VM
   const products = productsData?.products.map((p) => {
     const bbox = getProductBoundingBox(p);
     return {
@@ -520,43 +497,33 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       setIsAddingProduct(false);
       return;
     }
-    void requests(`/teams/${teamId}/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        product: {
+    setProductsData({
+      products: [
+        ...(productsData?.products ?? []),
+        {
+          id: "new",
           name: "新しいプロダクト",
-          comments: comments?.comments.filter((c) =>
-            commentsSelected.some((e) => e.id === c.id)
-          ),
+          comments:
+            commentsData?.comments
+              .filter((c) => commentsSelected.some((e) => e.id === c.id))
+              .map((c) => c.id) ?? [],
           techs: [],
         },
-      }),
-    }).then(() => {
-      setIsAddingProduct(false);
-      setCommentsSelected([]);
-      void refetchProducts();
+      ],
     });
   };
-  const handleAddItem = ({ id, value }: { id: string; value: string }) => {
-    if (value === "") {
+
+  // アイテム追加時に呼ばれる
+  const handleAddItem = ({ id, body: body }: { id: "problem" | "goal" | "solution"; body: string }) => {
+    if (body === "") {
       return;
     }
-    void requests(`/teams/${teamId}/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comment: {
-          value,
-          type: id,
-        },
-      }),
-    }).then(() => {
-      void refetchComments();
+    setComments({
+      comments: [...(commentsData?.comments ?? []), {
+        id: 'new',
+        type: id,
+        body: body,
+      }]
     });
   };
 

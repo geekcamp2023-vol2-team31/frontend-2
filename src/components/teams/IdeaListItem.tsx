@@ -4,7 +4,7 @@ import classes from "./IdeaListItem.module.css";
 interface IIdeaListItemProps {
   id: string;
   type: "problem" | "solution" | "goal";
-  value: string;
+  body: string;
   leftStyle: "circle" | "triangle";
   rightStyle: "circle" | "triangle";
   checkboxValue?: boolean;
@@ -39,7 +39,7 @@ export interface IIdeaListItemChangeHeightEvent {
 const IdeaListItem: FC<IIdeaListItemProps> = ({
   id,
   type,
-  value,
+  body,
   checkboxValue,
   leftStyle,
   rightStyle,
@@ -51,7 +51,7 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   // 入力中の値 エンターキーを押した際にonEnterに渡される
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(body);
 
   // コンポーネントの初回レンダー時に高さをonChangeHeightを呼び出す
   useEffect(() => {
@@ -63,8 +63,8 @@ const IdeaListItem: FC<IIdeaListItemProps> = ({
 
   // prop.value の値が変わったときに、入力フォームの値をvalueに合わせる
   useEffect(() => {
-    setInputValue(value);
-  }, [value]);
+    setInputValue(body);
+  }, [body]);
 
   const handleChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!onChangeCheckbox) {

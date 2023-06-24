@@ -81,11 +81,11 @@ const uniqueId = (() => {
  * }
  */
 let comments = [
-  { id: "1", value: "コメント1", type: "problem" },
-  { id: "2", value: "コメント2", type: "problem" },
-  { id: "3", value: "コメント3", type: "goal" },
-  { id: "4", value: "コメント4", type: "solution" },
-  { id: "5", value: "コメント5", type: "solution" },
+  { id: "1", body: "コメント1", type: "problem" },
+  { id: "2", body: "コメント2", type: "problem" },
+  { id: "3", body: "コメント3", type: "goal" },
+  { id: "4", body: "コメント4", type: "solution" },
+  { id: "5", body: "コメント5", type: "solution" },
 ];
 
 let products = [
@@ -98,8 +98,12 @@ let products = [
 ];
 
 let links = [
-  { id: "1", leftCommentId: comments[0].id, rightCommentId: comments[2].id },
-  { id: "2", leftCommentId: comments[2].id, rightCommentId: comments[3].id },
+  { id: "1", leftCommentId: comments[0].id, rightCommentId: comments[4].id },
+  { id: "2", leftCommentId: comments[1].id, rightCommentId: comments[4].id },
+  { id: "3", leftCommentId: comments[2].id, rightCommentId: comments[3].id },
+  { id: "4", leftCommentId: comments[3].id, rightCommentId: comments[5].id },
+  { id: "5", leftCommentId: comments[3].id, rightCommentId: comments[6].id },
+  { id: "6", leftCommentId: comments[4].id, rightCommentId: comments[7].id },
 ];
 // ↑ ダミーデータの宣言 ↑
 
@@ -261,10 +265,11 @@ app.get("/teams/:teamId/comments", (req, res) => {
  *  }
  */
 app.post("/teams/:teamId/comments", (req, res) => {
+  console.log(req);
   const {
-    comment: { value, type },
+    comment: { body, type },
   } = req.body;
-  const newComment = { id: uniqueId(), value, type };
+  const newComment = { id: uniqueId(), body, type };
   comments.push(newComment);
   res.send(newComment);
 });

@@ -8,7 +8,10 @@ const requests = async <T = unknown>(
   path: string, // リクエストのパス 例: "/users/me"
   init?: RequestInit | undefined
 ) => {
-  if (init?.method && ["POST", "PUT", "PATCH", "DELETE"].includes(init.method)) {
+  if (
+    init?.method &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(init.method)
+  ) {
     init.headers = { ...init.headers, "Content-Type": "application/json" };
   }
   const req = await fetch(`${baseURL}${path}`, {

@@ -16,7 +16,7 @@ interface IIdeaListProps {
   rightStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのrightStyle
   items: {
     id: string;
-    value: string;
+    body: string;
     checkboxValue?: boolean;
     emphasized?: boolean;
     onEnter?: (event: IIdeaListItemEnterEvent) => void;
@@ -47,13 +47,13 @@ interface IIdeaListChangeItemsEvent {
   id: string;
   items: {
     id: string;
-    value: string;
+    body: string;
   }[];
 }
 
 interface IIdeaListAddItemEvent {
-  id: string;
-  value: string;
+  id: "problem" | "goal" | "solution";
+  body: string;
 }
 
 // 要素の位置と大きさを表す型
@@ -148,7 +148,7 @@ const IdeaList: FC<IIdeaListProps> = ({
     });
   };
 
-  const handleSetItems = (items: { id: string; value: string }[]) => {
+  const handleSetItems = (items: { id: string; body: string }[]) => {
     if (onChangeItems) {
       onChangeItems({ id, items });
     }
@@ -182,7 +182,7 @@ const IdeaList: FC<IIdeaListProps> = ({
       <div style={{ marginTop: "8px" }}>
         <NewIdeaListItem
           id={id}
-          onEnter={({ value }) => handleAddItem({ id: type, value })}
+          onEnter={({ value }) => handleAddItem({ id: type, body: value })}
           leftStyle={leftStyle}
           rightStyle={rightStyle}
         />
