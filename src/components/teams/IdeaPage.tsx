@@ -90,7 +90,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     isLoading: isLoadingLinks,
     setData: setLinksData,
   } = useTeamLinks(teamId);
-  console.log({ linksData });
 
   // コメント一覧の取得
   const {

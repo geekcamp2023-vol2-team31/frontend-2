@@ -5,7 +5,6 @@ import { useUsersMe } from "@/hooks/useUsersMe";
 import { requests } from "@/utils/requests";
 import { useRouter } from "next/router";
 import style from "./home.module.scss";
-import { useMemo } from "react";
 
 const Home = () => {
   const router = useRouter();
