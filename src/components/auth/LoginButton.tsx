@@ -9,20 +9,17 @@ import { useRouter } from "next/router";
 export const LoginButton = () => {
   const { data: session } = useSession();
   const token = session?.user.accessToken as string;
-  const { setData } = useAuth(token);
+  const { auth } = useAuth(token);
   const router = useRouter();
 
   useEffect(() => {
-    if (session) {
+    if (auth?.status === "ok") {
       void router.push("/home");
     }
-  }, [session, router]);
+  }, [auth]);
   const handleClick = async () => {
     try {
-      await signIn("github").then(() => {
-        console.log("token", token);
-        setData(token);
-      });
+      await signIn("github");
     } catch (error) {
       toast.error("ログインに失敗しました。");
     }
