@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import IdeaListItem, {
   IIdeaListItemChangeCheckboxEvent,
   IIdeaListItemClickConnectorEvent,
@@ -6,15 +6,17 @@ import IdeaListItem, {
 } from "./IdeaListItem";
 import classes from "./IdeaList.module.css";
 import { ReactSortable } from "react-sortablejs";
+import NewIdeaListItem from "./NewIdeaListItem/NewIdeaListItem";
 
 interface IIdeaListProps {
   id: string;
   label: string;
+  type: "problem" | "solution" | "goal";
   leftStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのleftStyle
   rightStyle: "circle" | "triangle"; // 子要素の全てのIdeaListItemのrightStyle
   items: {
     id: string;
-    value: string;
+    body: string;
     checkboxValue?: boolean;
     emphasized?: boolean;
     onEnter?: (event: IIdeaListItemEnterEvent) => void;
@@ -23,9 +25,16 @@ interface IIdeaListProps {
   }[];
   onChangeItemsHeight?: (event: IIdeaListChangeItemsHeightEvent) => void;
   onChangeItems?: (event: IIdeaListChangeItemsEvent) => void;
+  onAddItem?: (event: IIdeaListAddItemEvent) => void;
+  onChangeBbox?: (event: {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  }) => void;
 }
 
-interface IIdeaListChangeItemsHeightEvent {
+export interface IIdeaListChangeItemsHeightEvent {
   id: string;
   items: {
     id: string;
@@ -38,8 +47,13 @@ interface IIdeaListChangeItemsEvent {
   id: string;
   items: {
     id: string;
-    value: string;
+    body: string;
   }[];
+}
+
+interface IIdeaListAddItemEvent {
+  id: "problem" | "goal" | "solution";
+  body: string;
 }
 
 // 要素の位置と大きさを表す型
@@ -59,16 +73,36 @@ const itemMargin = 8;
 const IdeaList: FC<IIdeaListProps> = ({
   id,
   label,
+  type,
   leftStyle,
   rightStyle,
   items,
   onChangeItemsHeight,
   onChangeItems,
+  onAddItem,
+  onChangeBbox,
 }) => {
   const [itemHeights, setItemHeights] = useState<IItemHeight[]>(
     // 初期値は全idにheight: 0を割り当てる。
     items.map((item) => ({ id: item.id, height: 0 }))
   );
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (itemHeights.length === 0)
+      setItemHeights(items.map((item) => ({ id: item.id, height: 0 })));
+  }, [items]);
+
+  useEffect(() => {
+    if (ref.current && onChangeBbox) {
+      const bbox = ref.current.getBoundingClientRect();
+      onChangeBbox({
+        top: bbox.top,
+        bottom: bbox.bottom,
+        left: bbox.left,
+        right: bbox.right,
+      });
+    }
+  }, [ref.current]);
 
   // 子要素の高さが変わったときにonChangeItemsHeightを呼び出す
   useEffect(() => {
@@ -78,7 +112,6 @@ const IdeaList: FC<IIdeaListProps> = ({
         height: number;
         offsetY: number;
       }[] = [];
-
       let offsetY = offsetYOfFirstItem;
       itemHeights.forEach((item) => {
         resultItems.push({
@@ -87,10 +120,9 @@ const IdeaList: FC<IIdeaListProps> = ({
         });
         offsetY += item.height + itemMargin;
       });
-
       onChangeItemsHeight({ id, items: resultItems });
     }
-  }, [id, itemHeights, onChangeItemsHeight]);
+  }, [id, itemHeights]);
 
   const handleChangeHeight = ({
     id,
@@ -108,18 +140,28 @@ const IdeaList: FC<IIdeaListProps> = ({
           return item;
         }
       });
-      return nextItemHeights;
+      if (!nextItemHeights.some((item) => item.id === id)) {
+        return [...nextItemHeights, { id, height }];
+      } else {
+        return nextItemHeights;
+      }
     });
   };
 
-  const handleSetItems = (items: { id: string; value: string }[]) => {
+  const handleSetItems = (items: { id: string; body: string }[]) => {
     if (onChangeItems) {
       onChangeItems({ id, items });
     }
   };
 
+  const handleAddItem = (e: IIdeaListAddItemEvent) => {
+    if (onAddItem) {
+      onAddItem(e);
+    }
+  };
+
   return (
-    <section className={classes.card}>
+    <section className={classes.card} ref={ref}>
       <h2 className={classes.heading}>{label}</h2>
       <ReactSortable
         className={classes["children-container"]}
@@ -129,6 +171,7 @@ const IdeaList: FC<IIdeaListProps> = ({
         {items.map((item) => (
           <IdeaListItem
             key={item.id}
+            type={type}
             {...item}
             leftStyle={leftStyle}
             rightStyle={rightStyle}
@@ -136,6 +179,14 @@ const IdeaList: FC<IIdeaListProps> = ({
           />
         ))}
       </ReactSortable>
+      <div style={{ marginTop: "8px" }}>
+        <NewIdeaListItem
+          id={id}
+          onEnter={({ value }) => handleAddItem({ id: type, body: value })}
+          leftStyle={leftStyle}
+          rightStyle={rightStyle}
+        />
+      </div>
     </section>
   );
 };

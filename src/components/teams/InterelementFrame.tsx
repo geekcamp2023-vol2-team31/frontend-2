@@ -15,8 +15,8 @@ const InterelementFrame: FC<IInterelementFrame> = ({ x, y, width, height }) => {
       style={{
         width: `${width + 2 * padding}px`,
         height: `${height + 2 * padding}px`,
-        left: `${x}px`,
-        top: `${y}px`,
+        left: `${x - padding}px`,
+        top: `${y - padding}px`,
       }}
       className={styles.frame}
     ></div>

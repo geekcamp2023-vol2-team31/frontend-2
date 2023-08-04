@@ -60,7 +60,7 @@ const Home = () => {
       <Header title="ようこそ!" />
       <div className={style.container}>
         <TeamSelector
-          belongs={belongs}
+          belongs={belongs ?? []}
           onClickTeam={handleClickTeam}
           onJoinTeam={handleJoinTeam}
           onEnterNewTeam={handleEnterNewTeam}
