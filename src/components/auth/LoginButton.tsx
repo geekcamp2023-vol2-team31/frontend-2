@@ -9,15 +9,14 @@ import { useRouter } from "next/router";
 export const LoginButton = () => {
   const { data: session } = useSession();
   const token = session?.user.accessToken as string;
-  const { setData } = useAuth(token);
+  const { auth } = useAuth(token);
   const router = useRouter();
 
   useEffect(() => {
-    if (session) {
-      setData(token);
+    if (auth?.status === "ok") {
       void router.push("/home");
     }
-  }, [session, router]);
+  }, [auth]);
   const handleClick = async () => {
     try {
       await signIn("github");

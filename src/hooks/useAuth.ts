@@ -1,21 +1,15 @@
-import { IAuthDeleteResponse } from "@/@types/auth/IAuthDeleteResponse";
 import { IAuthPostResponse } from "@/@types/auth/IAuthPostResponse";
 import { requests } from "@/utils/requests";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 type TUseAuth = (token: string) => {
-  setData: (token: string) => void;
-  deleteData: () => void;
-  isError: boolean;
-  error: unknown;
-};
-
-type TBody = {
-  token: string;
+  auth: IAuthPostResponse | undefined;
 };
 
 export const useAuth: TUseAuth = (token: string) => {
   const url = "/auth";
+
+  const [auth, setAuth] = useState<IAuthPostResponse>();
 
   const postAuth = () =>
     requests<IAuthPostResponse>(url, {
@@ -26,30 +20,15 @@ export const useAuth: TUseAuth = (token: string) => {
       body: JSON.stringify({ token }),
     });
 
-  const postMutation = useMutation<IAuthPostResponse, unknown, TBody>({
-    mutationFn: postAuth,
-  });
-
-  const setData = (token: string) => {
-    postMutation.mutate({ token });
-  };
-
-  const deleteAuth = () =>
-    requests<IAuthDeleteResponse>(url, {
-      method: "DELETE",
-    });
-  const deleteMutation = useMutation<IAuthDeleteResponse>({
-    mutationFn: deleteAuth,
-  });
-
-  const deleteData = () => {
-    deleteMutation.mutate();
-  };
+  useEffect(() => {
+    if (!token) return;
+    void (async () => {
+      const res = await postAuth();
+      setAuth(res);
+    })();
+  }, [token]);
 
   return {
-    setData,
-    deleteData,
-    isError: postMutation.isError,
-    error: postMutation.error,
+    auth,
   };
 };
