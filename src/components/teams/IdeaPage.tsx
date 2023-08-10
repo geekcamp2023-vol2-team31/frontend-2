@@ -14,6 +14,7 @@ import { useTeamLinks } from "@/hooks/useTeamLinks";
 import { ProductFrame } from "./ProductFrame";
 import { useTeamComments } from "@/hooks/useTeamComments";
 import { useTeamProducts } from "@/hooks/useTeamProducts";
+import {uuid} from "@/utils/uuid";
 
 interface IIdeaPageProps {
   teamId: string;
@@ -97,7 +98,7 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
     isLoading: isLoadingComments,
     setData: setComments,
   } = useTeamComments(teamId);
-  const addLink = (link: Partial<ILink>) => {
+  const addLink = (link: ILink) => {
     if (!linksData) {
       throw new Error("linksデータが取得できていません");
     }
@@ -107,20 +108,11 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       );
     }
 
-    // TODO: setLinksDataでPOSTした値を利用する必要がある
-    const getUniqueCommentId = (seed: number): string => {
-      if (linksData.links.some((c) => c.id === seed.toString())) {
-        return getUniqueCommentId(seed + 1);
-      } else {
-        return seed.toString();
-      }
-    };
-
     setLinksData({
       links: [
         ...linksData.links,
         {
-          id: getUniqueCommentId(1), // TODO: UUIDが望ましい 使われていない自然数を指定する
+          id: uuid(),
           leftCommentId: link.left.id,
           rightCommentId: link.right.id,
         },
@@ -204,8 +196,6 @@ const IdeaPage: FC<IIdeaPageProps> = ({ teamId, onProductClick }) => {
       }
     });
   };
-
-  useEffect;
   const onChangeCheckbox = ({ id, value }: { id: string; value: boolean }) => {
     if (value) {
       // 選択中のコメントに追加
