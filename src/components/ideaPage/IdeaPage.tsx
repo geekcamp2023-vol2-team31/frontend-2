@@ -1,5 +1,5 @@
 const IdeaPage = () => {
-  return <div></div>
-}
+  return <div></div>;
+};
 
-export {IdeaPage}
+export { IdeaPage };
