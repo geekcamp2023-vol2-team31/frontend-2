@@ -1,5 +1,9 @@
-export type IComment = {
+export type ICommentType = "problem" | "goal" | "solution";
+
+export type IComment<T extends ICommentType = ICommentType> = {
   id: number;
   body: string;
-  type: "problem" | "goal" | "solution";
+  type: T;
 };
+
+export type ICommentsData = {[key in ICommentType]:IComment[]}

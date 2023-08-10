@@ -1,4 +1,4 @@
-import { IComment } from "@/_types/Comment";
+import {IComment} from "@/_types/Comment";
 import { Comment } from "./comment";
 
 type props = {
