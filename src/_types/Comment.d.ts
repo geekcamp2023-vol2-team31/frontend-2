@@ -1,7 +1,7 @@
 export type ICommentType = "problem" | "goal" | "solution";
 
 export type IComment<T extends ICommentType = ICommentType> = {
-  id: number;
+  id: string;
   body: string;
   type: T;
 };
