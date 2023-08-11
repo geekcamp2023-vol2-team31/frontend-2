@@ -3,7 +3,9 @@ import { ITeamLinksGetResponse } from "@/@types/team/links/ITeamLinksGetResponse
 import { ITeamLinksPostBody } from "@/@types/team/links/ITeamLinksPostBody";
 import { ITeamLinksPostResponse } from "@/@types/team/links/ITeamLinksPostResponse";
 import { escape } from "@/utils/escape";
+import { intersection } from "@/utils/intersection";
 import { requests } from "@/utils/requests";
+import { subtraction } from "@/utils/subtraction";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 type TUseTeamLinks = (teamId: string) => {
@@ -13,6 +15,7 @@ type TUseTeamLinks = (teamId: string) => {
 };
 
 export const useTeamLinks: TUseTeamLinks = (teamId) => {
+  type ITeamLink = ITeamLinksGetResponse["links"][number];
   const url = `/teams/${escape(teamId)}/links`;
 
   const getLinks = () => requests<ITeamLinksGetResponse>(url);
@@ -31,6 +34,22 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
       method: "DELETE",
     });
 
+  const compareWholeFn = (a: ITeamLink, b: ITeamLink) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    if (a.leftCommentId < b.leftCommentId) return -1;
+    if (a.leftCommentId > b.leftCommentId) return 1;
+    if (a.rightCommentId < b.rightCommentId) return -1;
+    if (a.rightCommentId > b.rightCommentId) return 1;
+    return 0;
+  };
+
+  const compareIdFn = (a: ITeamLink, b: ITeamLink) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  };
+
   // query: データ取得のサポート
   const { data, isLoading, refetch } = useQuery<ITeamLinksGetResponse>({
     queryKey: ["teams", teamId, "links"],
@@ -48,35 +67,32 @@ export const useTeamLinks: TUseTeamLinks = (teamId) => {
         return newData;
       }
 
-      const oldIds = data.links.map((link) => link.id);
-      const oldIdsSet = new Set(oldIds);
-      const newIdsSet = new Set(newData.links.map((link) => link.id));
+      const oldLinks = data.links;
+      const newLinks = newData.links;
 
-      // 古いリストにあって新しいリストにない項目は削除する。
-      for (const id of oldIds) {
-        if (newIdsSet.has(id) === false) {
-          await deleteLink(id);
-        }
+      const addedLinks = subtraction(
+        newLinks,
+        intersection(oldLinks, newLinks, compareIdFn),
+        compareIdFn
+      );
+      const deletedLinks = subtraction(
+        oldLinks,
+        intersection(oldLinks, newLinks, compareIdFn),
+        compareIdFn
+      );
+      const changedLinks = subtraction(
+        subtraction(newLinks, addedLinks, compareIdFn),
+        oldLinks,
+        compareWholeFn
+      );
+
+      for (const link of deletedLinks) {
+        await deleteLink(link.id);
       }
-
-      for (const link of newData.links) {
-        // 古いリストにない項目は追加する。
-        if (oldIdsSet.has(link.id) === false) {
-          await postLink({ link });
-          continue;
-        }
-
-        // 変更のない項目はそのままにする。
-        const oldLink = data.links.find((oldLink) => link.id === oldLink.id);
-        if (
-          oldLink === undefined ||
-          (oldLink.leftCommentId === link.leftCommentId &&
-            oldLink.rightCommentId === oldLink.rightCommentId)
-        ) {
-          continue;
-        }
-
-        // 変更のある項目は変更する。
+      for (const link of addedLinks) {
+        await postLink({ link });
+      }
+      for (const link of changedLinks) {
         await putLink(link.id, { link });
       }
 

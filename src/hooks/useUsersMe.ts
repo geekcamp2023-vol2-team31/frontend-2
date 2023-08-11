@@ -2,7 +2,9 @@ import { IUsersMeGetResponse } from "@/@types/user/IUsersMeGetResponse";
 import { IUsersMePutBody } from "@/@types/user/IUsersMePutBody";
 import { IUsersMeTechPostBody } from "@/@types/user/techs/IUsersMeTechPostBody";
 import { IUsersMeTechPutBody } from "@/@types/user/techs/IUsersMeTechPutBody";
+import { intersection } from "@/utils/intersection";
 import { requests } from "@/utils/requests";
+import { subtraction } from "@/utils/subtraction";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { escape } from "querystring";
 
@@ -13,6 +15,7 @@ type TUseUsersMe = () => {
 };
 
 export const useUsersMe: TUseUsersMe = () => {
+  type IUTT = IUsersMeGetResponse["user"]["userToTechs"][number];
   const url = "/users/me";
 
   const getUsersMe = () => requests<IUsersMeGetResponse>(url);
@@ -39,6 +42,21 @@ export const useUsersMe: TUseUsersMe = () => {
       method: "DELETE",
     });
 
+  const compareWholeFn = (a: IUTT, b: IUTT) => {
+    if (a.tech.name < b.tech.name) return -1;
+    if (a.tech.name > b.tech.name) return 1;
+    if (a.level < b.level) return -1;
+    if (a.level > b.level) return 1;
+    if (a.level < b.level) return -1;
+    return 0;
+  };
+
+  const compareIdFn = (a: IUTT, b: IUTT) => {
+    if (a.tech.name < b.tech.name) return -1;
+    if (a.tech.name > b.tech.name) return 1;
+    return 0;
+  };
+
   const { data, isLoading, refetch } = useQuery<IUsersMeGetResponse>({
     queryKey: ["users", "me"],
     queryFn: getUsersMe,
@@ -48,34 +66,33 @@ export const useUsersMe: TUseUsersMe = () => {
     mutationFn: async (newData: IUsersMeGetResponse) => {
       const oldTechs = data?.user.userToTechs;
       const newTechs = newData.user.userToTechs;
-      if (oldTechs === undefined) {
-        return newTechs;
+
+      if (!oldTechs) return newTechs;
+
+      const addedTechs = subtraction(
+        newTechs,
+        intersection(oldTechs, newTechs, compareIdFn),
+        compareIdFn
+      );
+      const deletedTechs = subtraction(
+        oldTechs,
+        intersection(oldTechs, newTechs, compareIdFn),
+        compareIdFn
+      );
+      const changedTechs = subtraction(
+        subtraction(newTechs, addedTechs, compareIdFn),
+        oldTechs,
+        compareWholeFn
+      );
+
+      for (const utt of deletedTechs) {
+        await deleteUsersMeTech(utt.tech.name);
       }
-      const oldTechsMap = new Map(oldTechs.map((utt) => [utt.tech.name, utt]));
-      const newTechsMap = new Map(newTechs.map((utt) => [utt.tech.name, utt]));
-
-      for (const oldTech of oldTechs) {
-        if (newTechsMap.has(oldTech.tech.name) === false) {
-          await deleteUsersMeTech(oldTech.tech.name);
-        }
+      for (const utt of addedTechs) {
+        await postUsersMeTech({ name: utt.tech.name, level: utt.level });
       }
-
-      for (const newTech of newTechs) {
-        const oldTech = oldTechsMap.get(newTech.tech.name);
-
-        if (oldTech === undefined) {
-          await postUsersMeTech({
-            name: newTech.tech.name,
-            level: newTech.level,
-          });
-          continue;
-        }
-
-        if (oldTech.level === newTech.level) {
-          continue;
-        }
-
-        await putUsersMeTech(newTech.tech.name, { level: newTech.level });
+      for (const utt of changedTechs) {
+        await putUsersMeTech(utt.tech.name, { level: utt.level });
       }
 
       await putUsersMe(newData);

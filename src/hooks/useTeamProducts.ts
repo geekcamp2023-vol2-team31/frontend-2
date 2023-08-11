@@ -5,6 +5,7 @@ import { ITeamProductsPostResponse } from "@/@types/team/products/ITeamProductsP
 import { escape } from "@/utils/escape";
 import { intersection } from "@/utils/intersection";
 import { requests } from "@/utils/requests";
+import { subtraction } from "@/utils/subtraction";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 type TUseTeamProducts = (teamId: string) => {
@@ -14,6 +15,8 @@ type TUseTeamProducts = (teamId: string) => {
 };
 
 export const useTeamProducts: TUseTeamProducts = (teamId) => {
+  type ITeamProduct = ITeamProductsGetResponse["products"][number];
+
   const url = `/teams/${escape(teamId)}/products`;
 
   const getProducts = () => requests<ITeamProductsGetResponse>(url);
@@ -32,6 +35,26 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
       method: "DELETE",
     });
 
+  const compareWholeFn = (a: ITeamProduct, b: ITeamProduct) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    if (a.comments.length < intersection(a.comments, b.comments).length)
+      return -1;
+    if (b.comments.length < intersection(a.comments, b.comments).length)
+      return 1;
+    if (a.techs.length < intersection(a.techs, b.techs).length) return -1;
+    if (b.techs.length < intersection(a.techs, b.techs).length) return 1;
+    return 0;
+  };
+
+  const compareIdFn = (a: ITeamProduct, b: ITeamProduct) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  };
+
   // query: データ取得のサポート
   const { data, isLoading, refetch } = useQuery<ITeamProductsGetResponse>({
     queryKey: ["teams", teamId, "products"],
@@ -49,49 +72,32 @@ export const useTeamProducts: TUseTeamProducts = (teamId) => {
         return newData;
       }
 
-      const oldIds = data.products.map((product) => product.id);
-      const oldIdsSet = new Set(oldIds);
-      const newIdsSet = new Set(newData.products.map((product) => product.id));
+      const oldProducts = data.products;
+      const newProducts = newData.products;
 
-      // 古いリストにあって新しいリストにない項目は削除する。
-      for (const id of oldIds) {
-        if (newIdsSet.has(id) === false) {
-          await deleteProduct(id);
-        }
+      const addedProducts = subtraction(
+        newProducts,
+        intersection(oldProducts, newProducts, compareIdFn),
+        compareIdFn
+      );
+      const deletedProducts = subtraction(
+        oldProducts,
+        intersection(oldProducts, newProducts, compareIdFn),
+        compareIdFn
+      );
+      const changedProducts = subtraction(
+        subtraction(newProducts, addedProducts, compareIdFn),
+        oldProducts,
+        compareWholeFn
+      );
+
+      for (const product of deletedProducts) {
+        await deleteProduct(product.id);
       }
-
-      for (const product of newData.products) {
-        // 古いリストにない項目は追加する。
-        if (oldIdsSet.has(product.id) === false) {
-          await postProduct({ product });
-          continue;
-        }
-
-        // 変更のない項目はそのままにする。
-        // 共通集合をとって長さが違えば、配列が変更されているといえる。
-        const oldProduct = data.products.find(
-          (oldProduct) => product.id === oldProduct.id
-        );
-        const commentsIntersection = intersection(
-          oldProduct?.comments ?? [],
-          product.comments
-        );
-        const techsIntersection = intersection(
-          oldProduct?.techs ?? [],
-          product.techs
-        );
-        if (
-          oldProduct === undefined ||
-          (oldProduct.name === product.id &&
-            commentsIntersection.length === oldProduct.comments.length &&
-            commentsIntersection.length === product.comments.length &&
-            techsIntersection.length === oldProduct.techs.length &&
-            techsIntersection.length === product.techs.length)
-        ) {
-          continue;
-        }
-
-        // 変更のある項目は変更する。
+      for (const product of addedProducts) {
+        await postProduct({ product });
+      }
+      for (const product of changedProducts) {
         await putProduct(product.id, { product });
       }
 

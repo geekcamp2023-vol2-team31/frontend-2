@@ -3,25 +3,74 @@ import { ITeamCommentsGetResponse } from "@/@types/team/comments/ITeamCommentsGe
 import { ITeamCommentsPostBody } from "@/@types/team/comments/ITeamCommentsPostBody";
 import { ITeamCommentsPostResponse } from "@/@types/team/comments/ITeamCommentsPostResponse";
 import { escape } from "@/utils/escape";
+import { intersection } from "@/utils/intersection";
 import { requests } from "@/utils/requests";
+import { subtraction } from "@/utils/subtraction";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-type ElementOf<T> = T extends (infer U)[] ? U : never;
+type ITeamCommentWithNext = ITeamCommentsGetResponse["comments"][number];
 
-type ITeamCommentsGetResponseWithoutNext = {
-  comments: Omit<ElementOf<ITeamCommentsGetResponse["comments"]>, "next">[];
-};
+type ITeamCommentWithoutNext = Omit<ITeamCommentWithNext, "next">;
+
+interface IDataOfUseTeamComments {
+  problems: ITeamCommentWithoutNext[];
+  goals: ITeamCommentWithoutNext[];
+  solutions: ITeamCommentWithoutNext[];
+}
 
 type TUseTeamComments = (teamId: string) => {
-  data: ITeamCommentsGetResponseWithoutNext | undefined;
-  setData: (data: ITeamCommentsGetResponseWithoutNext) => void;
+  data: IDataOfUseTeamComments | undefined;
   isLoading: boolean;
+  setData: (data: IDataOfUseTeamComments) => void;
+};
+
+const commentsWithoutNextToCommentsWithNext = (
+  comments: ITeamCommentWithoutNext[]
+): ITeamCommentWithNext[] =>
+  comments.reduceRight<ITeamCommentWithNext[]>((list, comment) => {
+    if (list.length === 0) list.unshift({ ...comment, next: undefined });
+    else list.unshift({ ...comment, next: list[0].id });
+    return list;
+  }, []);
+
+const commentsToDataOfUseTeamComments = (
+  comments: ITeamCommentWithNext[]
+): IDataOfUseTeamComments => {
+  const dataOfUseTeamCommentsWithoutNext = comments.reduce<{
+    problems: ITeamCommentWithoutNext[];
+    goals: ITeamCommentWithoutNext[];
+    solutions: ITeamCommentWithoutNext[];
+  }>(
+    (result, current) => {
+      result[`${current.type}s`].push(current);
+      return result;
+    },
+    {
+      problems: [],
+      goals: [],
+      solutions: [],
+    }
+  );
+  return {
+    problems: commentsWithoutNextToCommentsWithNext(
+      dataOfUseTeamCommentsWithoutNext.problems
+    ),
+    goals: commentsWithoutNextToCommentsWithNext(
+      dataOfUseTeamCommentsWithoutNext.goals
+    ),
+    solutions: commentsWithoutNextToCommentsWithNext(
+      dataOfUseTeamCommentsWithoutNext.solutions
+    ),
+  };
 };
 
 export const useTeamComments: TUseTeamComments = (teamId) => {
   const url = `/teams/${escape(teamId)}/comments`;
 
-  const getComments = () => requests<ITeamCommentsGetResponse>(url);
+  const getComments = async () => {
+    const comments = await requests<ITeamCommentsGetResponse>(url);
+    return commentsToDataOfUseTeamComments(comments.comments);
+  };
   const postComment = (data: ITeamCommentsPostBody) =>
     requests<ITeamCommentsPostResponse>(url, {
       method: "POST",
@@ -37,73 +86,79 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
       method: "DELETE",
     });
 
+  const compareIdFn = (
+    a: ITeamCommentWithoutNext,
+    b: ITeamCommentWithoutNext
+  ) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    if (a.body < b.body) return -1;
+    if (a.body > b.body) return 1;
+    return 0;
+  };
+
+  const compareWholeFn = (
+    a: ITeamCommentWithoutNext,
+    b: ITeamCommentWithoutNext
+  ) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    if (a.body < b.body) return -1;
+    if (a.body > b.body) return 1;
+    return 0;
+  };
+
   // query: データ取得のサポート
-  const { data, isLoading, refetch } = useQuery<ITeamCommentsGetResponse>({
+  const { data, isLoading, refetch } = useQuery<IDataOfUseTeamComments>({
     queryKey: ["teams", teamId, "comments"],
     queryFn: getComments,
   });
 
   // mutation: データ更新のサポート
   const mutation = useMutation<
-    ITeamCommentsGetResponse,
+    IDataOfUseTeamComments,
     unknown,
-    ITeamCommentsGetResponseWithoutNext
+    IDataOfUseTeamComments
   >({
     mutationFn: async (newData) => {
       if (data === undefined) {
         return newData;
       }
 
-      const oldComments = data.comments;
-      const newComments = newData.comments;
-      const oldIds = oldComments.map((comment) => comment.id);
-      const newIds = newComments.map((comment) => comment.id);
-      const oldIdsSet = new Set(oldIds);
-      const newIdsSet = new Set(newIds);
+      const oldComments: ITeamCommentWithNext[] = [
+        ...data.problems,
+        ...data.goals,
+        ...data.solutions,
+      ];
+      const newComments: ITeamCommentWithNext[] = [
+        ...commentsWithoutNextToCommentsWithNext(newData.problems),
+        ...commentsWithoutNextToCommentsWithNext(newData.goals),
+        ...commentsWithoutNextToCommentsWithNext(newData.solutions),
+      ];
 
-      // 古いリストにあって新しいリストにない項目は削除する。
-      for (const id of oldIds) {
-        if (newIdsSet.has(id) === false) {
-          await deleteComment(id);
-        }
-      }
-
-      // 新しいリストにあって古いリストにない項目は追加する。
-      for (const comment of newComments) {
-        if (oldIdsSet.has(comment.id) === false) {
-          await postComment({ comment });
-        }
-      }
-
-      const oldCommentsWithNextMap = new Map(
-        oldComments.map<[string, ITeamCommentsGetResponse["comments"][number]]>(
-          (comment) => [comment.id, comment]
-        )
+      const deletedComments = subtraction(
+        oldComments,
+        intersection(oldComments, newComments, compareIdFn),
+        compareIdFn
       );
-      const newCommentsWithNext = newComments.map<
-        ITeamCommentsGetResponse["comments"][number]
-      >((comment, idx) => {
-        const next = newComments[idx]?.id;
-        if (next === undefined) {
-          return { ...comment, next: undefined };
-        }
-        return { ...comment, next };
-      });
+      const addedComments = subtraction(
+        oldComments,
+        intersection(oldComments, newComments, compareIdFn),
+        compareIdFn
+      );
+      const changedComments = subtraction(
+        subtraction(newComments, addedComments, compareIdFn),
+        oldComments,
+        compareWholeFn
+      );
 
-      for (const comment of newCommentsWithNext) {
-        const oldComment = oldCommentsWithNextMap.get(comment.id);
-
-        // 変更のない項目はそのままにする。
-        if (
-          oldComment === undefined ||
-          (oldComment.next === comment.next &&
-            oldComment.body === comment.body &&
-            oldComment.type === comment.type)
-        ) {
-          continue;
-        }
-
-        // 変更のある項目は変更する。
+      for (const comment of deletedComments) {
+        await deleteComment(comment.id);
+      }
+      for (const comment of addedComments) {
+        await postComment({ comment });
+      }
+      for (const comment of changedComments) {
         await putComment(comment.id, { comment });
       }
 
@@ -114,7 +169,7 @@ export const useTeamComments: TUseTeamComments = (teamId) => {
     },
   });
 
-  const setData = (data: ITeamCommentsGetResponse) => {
+  const setData = (data: IDataOfUseTeamComments) => {
     mutation.mutate(data);
   };
 
