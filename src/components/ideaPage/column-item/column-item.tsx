@@ -9,11 +9,9 @@ type props = {
   name: ICommentType
   comments: IComment[];
   onCommentsChange: (val:IComment[]) => void;
-  links: ILink[];
-  onLinksChange: (val:ILink[]) => void;
 }
 
-const ColumnItem = ({name,comments,onCommentsChange,links,onLinksChange}:props) => {
+const ColumnItem = ({name,comments,onCommentsChange}:props) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setWrapperPosition = useSetAtom(WrapperPositionAtom);
   useEffect(()=>{
